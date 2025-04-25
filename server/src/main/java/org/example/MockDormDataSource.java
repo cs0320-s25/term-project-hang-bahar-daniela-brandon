@@ -19,6 +19,8 @@ public class MockDormDataSource implements DormDataSource {
         new HashSet<>(Arrays.asList("single", "double")),
         new HashSet<>(Arrays.asList("shared", "private")),
         new HashSet<>(Arrays.asList("Sharpe Refectory", "Main Green")),
+        new HashSet<>(Arrays.asList("sorority housing")),
+        false,
         Arrays.asList(
             "this dorm is really good and clean and nice",
             "can be loud with parties",
@@ -32,13 +34,26 @@ public class MockDormDataSource implements DormDataSource {
         new HashSet<>(Arrays.asList("double", "3-persons suite")),
         new HashSet<>(Collections.singletonList("shared")),
         new HashSet<>(Arrays.asList("Sharpe Refectory", "Sciences Library")),
+        new HashSet<>(Arrays.asList("quiet housing")),
+        false,
         Arrays.asList(
             "quiet housing",
             "loud thayer"
         )
     ));
 
-    // Add more dorms as needed...
+    // Young Orchard dorm
+    dorms.add(new Dorm(
+        "Barbour",
+        new HashSet<>(Arrays.asList("4-persons suite")),
+        new HashSet<>(Collections.singletonList("private")),
+        new HashSet<>(Arrays.asList("TF Green Hall", "Orwig Music Library")),
+        new HashSet<>(Arrays.asList("religious housing")),
+        true,
+        Arrays.asList(
+            "so far away from everything, but suites come with kitchens and private bathroom"
+        )
+    ));
   }
 
   @Override
@@ -75,6 +90,12 @@ public class MockDormDataSource implements DormDataSource {
       score += 30;
     }
 
+    for (String community : dorm.getCommunities()) {
+      if (community.toLowerCase().contains(query)) {
+        score += 30;
+      }
+    }
+
     // Check room types
     for (String roomType : dorm.getRoomTypes()) {
       if (roomType.toLowerCase().contains(query)) {
@@ -85,14 +106,14 @@ public class MockDormDataSource implements DormDataSource {
     // Check bathroom types
     for (String bathroom : dorm.getBathrooms()) {
       if (bathroom.toLowerCase().contains(query)) {
-        score += 20;
+        score += 10;
       }
     }
 
     // Check proximity
     for (String location : dorm.getProximity()) {
       if (location.toLowerCase().contains(query)) {
-        score += 15;
+        score += 5;
       }
     }
 
@@ -103,7 +124,11 @@ public class MockDormDataSource implements DormDataSource {
         reviewMatches++;
       }
     }
-    score += reviewMatches * 10;
+    score += reviewMatches * 5;
+
+    if (query.contains("accessible") || query.contains("accessibility") && (dorm.isAccessible())) {
+      score += 30;
+    }
 
     return score;
   }

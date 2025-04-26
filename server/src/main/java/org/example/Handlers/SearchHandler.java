@@ -1,7 +1,9 @@
 package org.example.Handlers;
 
 
+import java.util.List;
 import org.example.DormDataSource;
+import org.example.DormSearchResult;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -23,6 +25,16 @@ public class SearchHandler implements Route {
       return "Missing query parameter";
     }
 
-    return gson.toJson(dataSource.searchDorms(query));
+	List<DormSearchResult> dorms = dataSource.searchDorms(query);
+
+	if (dorms.isEmpty()) {
+	  res.status(404);
+	  return "No dorms found for the given query:" + query;
+	}
+	else {
+		return gson.toJson(dataSource.searchDorms(query));
+	}
+
+    
   }
 }

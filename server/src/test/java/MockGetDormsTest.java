@@ -66,12 +66,6 @@ public class MockGetDormsTest {
 	assertTrue(result.contains("Missing query parameter"));
   }
 
-  //GETDORMSHNDLER WILL RETURN ALL DORMS REGARDLESS OF WHAT QUERY PARAMETER IS 
-//   @Test
-//   public void testGetDormsInvalidQuery() {
-// 	String result = tryRequest("invalid");
-// 	assertTrue(result.contains("[]"));
-//   }
 
 }
 

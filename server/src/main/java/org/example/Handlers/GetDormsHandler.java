@@ -22,6 +22,7 @@ public class GetDormsHandler implements Route {
       res.status(400);
       return "Missing query parameter";
     }
+	
 
     return gson.toJson(dataSource.getAllDorms());
   }

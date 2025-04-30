@@ -5,6 +5,7 @@ import static spark.Spark.after;
 
 import java.io.IOException;
 import org.example.Handlers.GetDormsHandler;
+import org.example.Handlers.MatchHandler;
 import org.example.Handlers.SearchHandler;
 import spark.Filter;
 import spark.Spark;
@@ -28,6 +29,8 @@ public class Server {
     // fetches the data at http://localhost:3232/search?query=quiet Or /info?query=getAllDorms
     Spark.get("/search", new SearchHandler(dataSource));
     Spark.get("/info", new GetDormsHandler(dataSource));
+    Spark.post("/match", new MatchHandler(dataSource));
+    System.out.println("called in server");
 
 
     Spark.notFound(

@@ -1,6 +1,7 @@
 package org.example;
 
 // MockDormDataSource.java
+import com.google.gson.JsonObject;
 import java.util.*;
 
 public class MockDormDataSource implements DormDataSource {
@@ -25,7 +26,8 @@ public class MockDormDataSource implements DormDataSource {
             "this dorm is really good and clean and nice",
             "can be loud with parties",
             "highly recommend"
-        )
+        ),
+        true
     ));
 
     // Hegeman dorm
@@ -39,7 +41,8 @@ public class MockDormDataSource implements DormDataSource {
         Arrays.asList(
             "quiet housing",
             "loud thayer"
-        )
+        ),
+        true
     ));
 
     // Young Orchard dorm
@@ -52,7 +55,8 @@ public class MockDormDataSource implements DormDataSource {
         true,
         Arrays.asList(
             "so far away from everything, but suites come with kitchens and private bathroom"
-        )
+        ),
+        false
     ));
   }
 
@@ -77,6 +81,72 @@ public class MockDormDataSource implements DormDataSource {
 
     return results;
   }
+
+  @Override
+  public List<DormSearchResult> matchDorms(JsonObject preferences) {
+    System.out.println("entered matchdorms in mock");
+    List<DormSearchResult> results = new ArrayList<>();
+
+    for (Dorm dorm : dorms) {
+      int score = calculateMatchScoreFromPreferences(dorm, preferences);
+      if (score > 0) {
+        results.add(new DormSearchResult(dorm, score));
+      }
+    }
+
+    results.sort((a, b) -> Integer.compare(b.getScore(), a.getScore()));
+    return results;
+  }
+
+  private int calculateMatchScoreFromPreferences(Dorm dorm, JsonObject preferences) {
+    int score = 0;
+
+    if (preferences.has("roomType")) {
+      String preferredRoom = preferences.get("roomType").getAsString();
+      if (dorm.getRoomTypes().stream().anyMatch(type -> type.equalsIgnoreCase(preferredRoom))) {
+        score += 10;
+      }
+    }
+
+    if (preferences.has("bathroomType")) {
+      String preferredBathroom = preferences.get("bathroomType").getAsString();
+      if (dorm.getBathrooms().stream().anyMatch(bath -> bath.equalsIgnoreCase(preferredBathroom))) {
+        score += 8;
+      }
+    }
+
+    if (preferences.has("proximity")) {
+      String preferredProximity = preferences.get("proximity").getAsString();
+      if (dorm.getProximity().stream().anyMatch(p -> p.toLowerCase().contains(preferredProximity.toLowerCase()))) {
+        score += 6;
+      }
+    }
+
+    if (preferences.has("community")) {
+      String preferredCommunity = preferences.get("community").getAsString();
+      if (dorm.getCommunities().stream().anyMatch(c -> c.equalsIgnoreCase(preferredCommunity))) {
+        score += 10;
+      }
+    }
+
+    if (preferences.has("ac")) {
+      boolean prefersAC = preferences.get("ac").getAsBoolean();
+      if (prefersAC == dorm.hasAC()) {
+        score += 5;
+      }
+    }
+
+    if (preferences.has("accessible")) {
+      boolean needsAccessible = preferences.get("accessible").getAsBoolean();
+      if (needsAccessible && dorm.isAccessible()) {
+        score += 10;
+      }
+    }
+
+    return score;
+  }
+
+
 
   private int calculateDormScore(Dorm dorm, String query) {
     int score = 0;

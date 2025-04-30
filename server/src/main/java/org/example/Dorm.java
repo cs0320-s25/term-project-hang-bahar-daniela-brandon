@@ -11,9 +11,10 @@ public class Dorm {
   private Set<String> communities;
   private boolean accessibility;
   private List<String> reviews;
+  private boolean hasAC;
 
   public Dorm(String name, Set<String> roomTypes, Set<String> bathrooms,
-      Set<String> proximity, Set<String> communities, boolean accessibility, List<String> reviews) {
+      Set<String> proximity, Set<String> communities, boolean accessibility, List<String> reviews, boolean hasAC) {
     this.name = name;
     this.roomTypes = roomTypes;
     this.bathrooms = bathrooms;
@@ -21,6 +22,7 @@ public class Dorm {
     this.communities = communities;
     this.accessibility = accessibility;
     this.reviews = reviews;
+    this.hasAC = hasAC;
   }
 
   // Getters
@@ -31,4 +33,5 @@ public class Dorm {
   public Set<String> getCommunities() { return communities; }
   public boolean isAccessible() { return accessibility; }
   public List<String> getReviews() { return reviews; }
+  public boolean hasAC() { return hasAC; }
 }

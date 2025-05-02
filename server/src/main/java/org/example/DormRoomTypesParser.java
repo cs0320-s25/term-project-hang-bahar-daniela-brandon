@@ -1,11 +1,12 @@
 package org.example;
+
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 
-public class DormParser {
+public class DormRoomTypesParser {
 
-  public static Map<String, Set<String>> parseDormRoomTypes(String csvFilePath) throws IOException {
+  public Map<String, Set<String>> parseDormRoomTypes(String csvFilePath) throws IOException {
     Map<String, Set<String>> dormRoomTypes = new HashMap<>();
 
     try (BufferedReader reader = Files.newBufferedReader(Paths.get(csvFilePath))) {
@@ -21,8 +22,8 @@ public class DormParser {
         String[] parts = line.split(",", -1);
         if (parts.length < 7) continue;
 
-        String dormName = parts[1].trim();     // e.g., BARBOURHALL
-        String roomType = parts[6].trim();     // e.g., Double (Suite/Apartment)
+        String dormName = parts[1].trim().toLowerCase().replaceAll("\\s+", "");
+        String roomType = parts[6].trim();    // e.g., Double (Suite/Apartment)
 
         dormRoomTypes
             .computeIfAbsent(dormName, k -> new HashSet<>())

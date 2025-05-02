@@ -3,13 +3,11 @@ package org.example;
 import static spark.Spark.after;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import org.example.Handlers.GetDormsHandler;
 import org.example.Handlers.SearchHandler;
-import org.example.DormParser;
 import spark.Filter;
 import spark.Spark;
 
@@ -57,10 +55,18 @@ public class Server {
 
   public static void printDormRoomTypes() {
     try {
-      Map<String, Set<String>> dorms = DormParser.parseDormRoomTypes("/Users/hangnguyen/Desktop/Academics/CS320/term-project-hang-bahar-daniela-brandon/dorm.csv");
-      for (Map.Entry<String, Set<String>> entry : dorms.entrySet()) {
-        System.out.println(entry.getKey() + " => " + entry.getValue());
-      }
+
+      Map<String, Set<String>> dorm_room_types = new DormRoomTypesParser().parseDormRoomTypes("/Users/hangnguyen/Desktop/Academics/CS320/term-project-hang-bahar-daniela-brandon/dorm.csv");
+      Map<String, Integer> accessibilityMap = AccessibilityFetcher.fetchAccessibility();
+
+//      System.out.println("printing dorm accessibility");
+//      for (Map.Entry<String, Integer> entry : accessibilityMap.entrySet()) {
+//        System.out.println(entry.getKey() + " => " + entry.getValue());
+//      }
+//
+//      for (Map.Entry<String, Set<String>> entry : dorm_room_types.entrySet()) {
+//        System.out.println(entry.getKey() + " => " + entry.getValue());
+//      }
 
     } catch (IOException e) {
       e.printStackTrace();

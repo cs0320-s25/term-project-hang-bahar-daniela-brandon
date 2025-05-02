@@ -4,7 +4,9 @@ interface Post {
   id: number;
   type: "dining" | "dorm";
   title: string;
+  location: string
   content: string;
+  dateTime: string;
 }
 
 const mockPosts: Post[] = [
@@ -12,31 +14,41 @@ const mockPosts: Post[] = [
     id: 1,
     type: "dining",
     title: "Great Breakfast!",
+    location: "Andrews Hall",
     content: "The pancakes were amazing at the dining hall.",
+    dateTime: "2023-10-01T10:00:00Z",
   },
   {
     id: 2,
     type: "dorm",
     title: "Quiet Dorm",
+    location: "Barbour Hall",
     content: "My dorm is very peaceful and clean.",
+    dateTime: "2023-10-01T10:00:00Z",
   },
   {
     id: 3,
     type: "dining",
     title: "Lunch Experience",
+    location: "Sharpe Refectory",
     content: "The pizza was a bit cold, but still tasty.",
+    dateTime: "2023-10-01T10:00:00Z",
   },
   {
     id: 4,
     type: "dorm",
     title: "Loud Neighbors",
+    location: "Wriston Quad",
     content: "The dorm is nice, but the neighbors are noisy.",
+    dateTime: "2023-10-01T10:00:00Z",
   },
   {
     id: 5,
     type: "dining",
-    title: "Dinner Delight",
+    title: "Yummy pasta",
+    location: "V-Dub",
     content: "The pasta was cooked perfectly!",
+    dateTime: "2023-10-01T10:00:00Z",
   },
 ];
 
@@ -55,7 +67,7 @@ export default function Reviews() {
     const matchesSearch =
       post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.content.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesType && matchesSearch;
+    return matchesType && matchesSearch;  
   });
 
   return (
@@ -91,7 +103,7 @@ export default function Reviews() {
         <input
           type="text"
           placeholder="Search reviews..."
-          className="border text-black border-gray-300 rounded px-4 py-2"
+          className="border text-black border-gray-300 rounded px-6 py-2 ml-auto mr-8"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -104,7 +116,12 @@ export default function Reviews() {
             key={post.id}
             className="border border-gray-300 rounded p-4 shadow"
           >
-            <h3 className="text-lg  text-black font-bold mb-2">{post.title}</h3>
+            <h1 className="text-2xl  text-black font-bold mb-2">
+              {post.title}
+            </h1>
+            <h3 className="text-lg  text-primary font-bold mb-2">
+              {post.location}
+            </h3>
             <p className="text-gray-700">{post.content}</p>
           </div>
         ))}

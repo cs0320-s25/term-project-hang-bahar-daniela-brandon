@@ -20,3 +20,7 @@ playwright/.cache/
 
 # mac
 .DS_Store
+# firebase
+server/src/main/resources/
+server/src/main/resources/*
+server/src/main/resources/**

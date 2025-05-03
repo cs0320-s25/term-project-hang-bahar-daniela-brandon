@@ -6,7 +6,10 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 import org.example.Handlers.GetDormsHandler;
+import org.example.Handlers.AddDormPostsHandler;
+import org.example.Posts.PostsDataSource;
 import org.example.Handlers.SearchHandler;
+import org.example.Posts.FirebasePostDataSource;
 import spark.Filter;
 import spark.Spark;
 
@@ -25,9 +28,17 @@ public class Server {
             });
 
     DormDataSource dataSource = DormDataSourceFactory.createDataSource(DormDataSourceFactory.DataSourceType.MOCK);
+  PostsDataSource postsDataSource;
+  try {
+    postsDataSource = new FirebasePostDataSource();
+  } catch (IOException e) {
+    System.err.println("Failed to initialize FirebasePostDataSource: " + e.getMessage());
+    throw new RuntimeException(e); // Or handle the exception as appropriate for your application
+  }
     // fetches the data at http://localhost:3232/search?query=quiet Or /info?query=getAllDorms
     Spark.get("/search", new SearchHandler(dataSource));
     Spark.get("/info", new GetDormsHandler(dataSource));
+	Spark.post("/add-dorm-post", new AddDormPostsHandler(postsDataSource));
 
     Spark.notFound(
         (request, response) -> {
@@ -38,7 +49,6 @@ public class Server {
 
     Spark.init();
     Spark.awaitInitialization();
-
     System.out.println("Server started at http://localhost:" + port);
   }
 

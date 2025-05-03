@@ -3,6 +3,7 @@ package org.example;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import org.example.Posts.PostsDataSource;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.auth.oauth2.GoogleCredentials;
 
-public class FirebaseDormDataSource implements DormDataSource {
+public class FirebaseDormDataSource implements DormDataSource{
   private List<Dorm> cachedDorms = new ArrayList<>();
   private boolean initialized = false;
 

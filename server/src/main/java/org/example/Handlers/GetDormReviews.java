@@ -10,6 +10,7 @@ import spark.Route;
 
 import java.util.List;
 
+// gets a list of reviews for a dorm
 public class GetDormReviews implements Route {
 	private PostsDataSource dataSource;
 	private Gson gson = new Gson();

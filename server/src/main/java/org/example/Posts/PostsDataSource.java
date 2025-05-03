@@ -13,6 +13,6 @@ public interface PostsDataSource {
 
 	List<String> getDormReviewsByName(String dormName);
 
-	List<Post> getAllPosts();
+	List<AbstractPost> getAllPosts();
 
 }

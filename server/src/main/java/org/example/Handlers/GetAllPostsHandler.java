@@ -9,7 +9,7 @@ import spark.Response;
 import spark.Route;
 
 import java.util.List;
-import org.example.Posts.Post;
+import org.example.Posts.AbstractPost;
 
 public class GetAllPostsHandler implements Route {
 	private PostsDataSource dataSource;
@@ -22,7 +22,7 @@ public class GetAllPostsHandler implements Route {
 	@Override
 	public Object handle(Request req, Response res) throws Exception {
 		try {
-			List<Post> allPosts = dataSource.getAllPosts();
+			List<AbstractPost> allPosts = dataSource.getAllPosts();
 			return gson.toJson(allPosts);
 		} catch (Exception e) {
 			res.status(500);

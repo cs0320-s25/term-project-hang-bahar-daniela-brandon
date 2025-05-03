@@ -54,6 +54,7 @@ public class FirebasePostDataSource implements PostsDataSource {
 	public void addDormPost(DormPost dormPost) {
 		String postId = dormPostsRef.push().getKey();
 		Map<String, Object> postValues = new HashMap<>();
+		postValues.put("title", dormPost.getTitle());
 		postValues.put("dormName", dormPost.getDormName());
 		postValues.put("rating", dormPost.getRating());
 		postValues.put("review", dormPost.getReview());
@@ -71,6 +72,7 @@ public class FirebasePostDataSource implements PostsDataSource {
 	public void addDiningPost(DiningPost diningPost) {
 		String postId = diningPostsRef.push().getKey();
 		Map<String, Object> postValues = new HashMap<>();
+		postValues.put("title", diningPost.getTitle());
 		postValues.put("hallName", diningPost.getHallName());
 		postValues.put("meals", diningPost.getMeals());
 		postValues.put("rating", diningPost.getRating());
@@ -86,13 +88,13 @@ public class FirebasePostDataSource implements PostsDataSource {
 	}
 
 	@Override
-	public List<Post> getAllPosts() {
+	public List<AbstractPost> getAllPosts() {
 		// Get all dorm posts and dining posts
 		List<DormPost> dormPosts = getAllDormPost();
 		List<DiningPost> diningPosts = getAllDiningPost();
 
 		// Combine into a single list of Post objects
-		List<Post> allPosts = new ArrayList<>();
+		List<AbstractPost> allPosts = new ArrayList<>();
 		allPosts.addAll(dormPosts);
 		allPosts.addAll(diningPosts);
 
@@ -114,6 +116,7 @@ public class FirebasePostDataSource implements PostsDataSource {
 				try {
 					for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
 						// Create a DormPost from the data
+						String title = postSnapshot.child("title").getValue(String.class);
 						String dormName = postSnapshot.child("dormName").getValue(String.class);
 						Integer rating = postSnapshot.child("rating").getValue(Integer.class);
 						String review = postSnapshot.child("review").getValue(String.class);
@@ -128,7 +131,7 @@ public class FirebasePostDataSource implements PostsDataSource {
 						} catch (Exception e) {
 							postDate = LocalDateTime.now();
 						}
-						DormPost post = new DormPost(dormName, rating, review, postDate);
+						DormPost post = new DormPost(title, dormName, rating, review, postDate);
 						posts.add(post);
 					}
 					future.complete(posts);
@@ -169,6 +172,7 @@ public class FirebasePostDataSource implements PostsDataSource {
 				try {
 					for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
 						// Create a DiningPost
+						String title = postSnapshot.child("title").getValue(String.class);
 						String hallName = postSnapshot.child("hallName").getValue(String.class);
 						String meals = postSnapshot.child("meals").getValue(String.class);
 						Integer rating = postSnapshot.child("rating").getValue(Integer.class);
@@ -189,7 +193,7 @@ public class FirebasePostDataSource implements PostsDataSource {
 							postDate = LocalDateTime.now();
 						}
 
-						DiningPost post = new DiningPost(hallName, meals, rating, review, postDate);
+						DiningPost post = new DiningPost(title, hallName, meals, rating, review, postDate);
 						posts.add(post);
 
 					}

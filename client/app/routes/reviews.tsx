@@ -16,7 +16,7 @@ const mockPosts: Post[] = [
     title: "Great Breakfast!",
     location: "Andrews Hall",
     content: "The pancakes were amazing at the dining hall.",
-    dateTime: "2023-10-01T10:00:00Z",
+    dateTime: "2023-10-02T10:00:00Z",
   },
   {
     id: 2,
@@ -70,6 +70,12 @@ export default function Reviews() {
     return matchesType && matchesSearch;  
   });
 
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedValue = e.target.value;
+    // Handle filter change logic here
+    console.log("Selected filter:", selectedValue);
+  }
+
   return (
     <div className="p-4">
       {/* Header Section */}
@@ -100,16 +106,25 @@ export default function Reviews() {
             All
           </button>
         </div>
-        <input
-          type="text"
-          placeholder="Search reviews..."
-          className="border text-black border-gray-300 rounded px-6 py-2 ml-auto mr-8"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+        <div>
+          <select
+            className="border text-black border-gray-300 rounded px-2 py-2 ml-auto mr-8"
+            onChange={(e) => handleFilterChange(e)}
+          >
+            <option value="most-recent">Most Recent</option>
+            <option value="highest-rated">Highest Rated</option>
+            <option value="lowest-rated">Lowest Rated</option>
+          </select>
+          <input
+            type="text"
+            placeholder="Search reviews..."
+            className="border text-black border-gray-300 rounded px-6 py-2 ml-auto mr-8"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
       </div>
 
-      {/* Posts Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredPosts.map((post) => (
           <div
@@ -123,6 +138,9 @@ export default function Reviews() {
               {post.location}
             </h3>
             <p className="text-gray-700">{post.content}</p>
+            <p className="text-gray-500 mt-2">
+              Posted on: {new Date(post.dateTime).toLocaleDateString()}
+            </p>
           </div>
         ))}
       </div>

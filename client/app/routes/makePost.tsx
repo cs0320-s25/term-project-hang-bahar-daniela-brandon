@@ -8,6 +8,8 @@ export default function MakePost() {
   const ALL_DORMS = [
     'Arch-Bron', 'Ev-Pole', 'James-Mead', 'Andrews Hall', 'Metcalf', 'Miller Hall', 'Morriss Hall', 'Champlin', 'Emery', 'Woolley Hall', 'New Pembroke 1', 'New Pembroke 2', 'New Pembroke 3', 'New Pembroke 4', '111 Brown St', '219 Bowen St', '315 Thayer', 'Barbour Hall', 'Buxton House', 'Chapin House', 'Chen Family Hall', 'Danoff Hall', 'Diman House', 'Goddard House', 'Harkness House', 'King House', 'Machado House', 'Marcy House', 'Olney House', 'Sears House', 'Sternlicht Commons', 'West House', 'Caswell Hall', 'Grad Center A', 'Grad Center B', 'Grad Center C', 'Grad Center D', 'Greg A', 'Greg B', 'Hegeman Hall', 'Hope College', 'Littlefield Hall', 'Minden Hall', 'Perkins Hall', 'Slater Hall', 'Young Orchard 10', 'Young Orchard 2', 'Young Orchard 4'];
 
+  const ALL_DINING_HALLS = ['V-Dub', 'Andrews', 'The Ratty', 'Jo\'s', 'Blue Room', 'Ivy Room', 'Gourmet to Go', 'SOE Cafe'];
+
   const [selectedOption, setSelectedOption] = useState<
     "Dorms" | "Dining Halls"
   >("Dorms");
@@ -17,13 +19,9 @@ export default function MakePost() {
     setRating(star);
   }; 
 
-    function handleSubmit(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
-        event.preventDefault();
-        // Perform the necessary actions to handle the form submission
-        // For example, you can access the form data and send it to the server
-        // You can also update the state or perform any other logic here
-        console.log("Form submitted!");
-    }
+  function handleSubmit(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
+    
+  }
   return (
     <div>
       <SignedIn>
@@ -77,11 +75,14 @@ export default function MakePost() {
               <p className="text-lg text-black">
                 Which dining hall did you eat from today?
               </p>
-              <input
-                type="text"
-                className="flex-1 border border-gray-300 rounded px-4 py-2 text-black"
-              />
-              <p className="text-lg text-black">What meal did you eat?</p>
+              <select className="flex-1 border border-gray-300 rounded px-4 py-2 text-black">
+                {ALL_DINING_HALLS.map((dining) => (
+                  <option key={dining} value={dining}>
+                    {dining}
+                  </option>
+                ))}
+              </select>
+              <p className="text-lg text-black py-2">What meal did you eat?</p>
               <input
                 type="text"
                 className="flex-1 border border-gray-300 rounded px-4 py-2 text-black"
@@ -90,6 +91,7 @@ export default function MakePost() {
           )}
 
           <div className="flex items-center mb-4">
+            <p className="text-lg text-black mr-3">Rate your experience:</p>
             {[1, 2, 3, 4, 5].map((star) => (
               <span
                 key={star}
@@ -106,14 +108,14 @@ export default function MakePost() {
           <div className="flex items-center space-x-4">
             <textarea
               placeholder="Add a review..."
-              className="flex-1 border border-gray-300 rounded px-4 py-14 text-black"
+              className="flex-1 border border-gray-300 rounded px-3 py-3 text-black"
             />
             <div className="flex-1 block flex-col items-center">
               <label
                 htmlFor="file-upload"
                 className="w-40 h-40 border border-gray-300 rounded px-4 py-2 text-black text-center"
               >
-                Upload Images
+                Upload Image
               </label>
               <input
                 id="file-upload"
@@ -139,7 +141,7 @@ export default function MakePost() {
         </div>
       </SignedIn>
       <SignedOut>
-        <RedirectToSignIn/>
+        <RedirectToSignIn />
       </SignedOut>
     </div>
   );

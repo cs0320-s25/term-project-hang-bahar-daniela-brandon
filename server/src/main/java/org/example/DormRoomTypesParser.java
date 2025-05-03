@@ -1,4 +1,4 @@
-package org.example.Dorms;
+package org.example;
 
 import java.io.*;
 import java.nio.file.*;

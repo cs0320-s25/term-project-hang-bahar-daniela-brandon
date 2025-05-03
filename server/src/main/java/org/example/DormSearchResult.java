@@ -1,4 +1,4 @@
-package org.example.Dorms;
+package org.example;
 
 public class DormSearchResult {
   private Dorm dorm;

@@ -1,4 +1,4 @@
-package org.example.Dorms;
+package org.example;
 
 // DormDataSourceFactory.java
 public class DormDataSourceFactory {

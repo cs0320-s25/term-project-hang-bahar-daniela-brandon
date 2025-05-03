@@ -1,4 +1,4 @@
-package org.example.Dorms;
+package org.example;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;

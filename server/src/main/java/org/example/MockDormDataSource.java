@@ -1,4 +1,4 @@
-package org.example.Dorms;
+package org.example;
 
 // MockDormDataSource.java
 import java.util.*;

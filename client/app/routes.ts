@@ -5,4 +5,6 @@ export default [
   route("/reviews", "routes/reviews.tsx"),
   route("/make-post", "routes/makePost.tsx"),
   route("/recommend", "routes/recommend.tsx"),
+  route("/login", "routes/login.tsx"),
+  route("/sign-up", "routes/signUp.tsx"),
 ] satisfies RouteConfig;

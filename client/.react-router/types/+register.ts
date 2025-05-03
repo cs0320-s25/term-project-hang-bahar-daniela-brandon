@@ -11,4 +11,6 @@ type Params = {
   "/reviews": {};
   "/make-post": {};
   "/recommend": {};
+  "/login": {};
+  "/sign-up": {};
 };

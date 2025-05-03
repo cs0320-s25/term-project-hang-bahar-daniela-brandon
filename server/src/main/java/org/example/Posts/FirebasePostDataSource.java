@@ -20,6 +20,9 @@ import java.util.HashMap;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.time.LocalDateTime;
+import java.util.concurrent.TimeoutException;
 
 public class FirebasePostDataSource implements PostsDataSource {
 	// Firebase database reference
@@ -30,7 +33,9 @@ public class FirebasePostDataSource implements PostsDataSource {
 	public FirebasePostDataSource() throws IOException {
 
 		String workingDirectory = System.getProperty("user.dir");
-		// Path firebaseConfigPath = Paths.get(workingDirectory, "term-project-hang-bahar-daniela-brandon","server","src", "main", "resources", "firebase_config.json");
+		// Path firebaseConfigPath = Paths.get(workingDirectory,
+		// "term-project-hang-bahar-daniela-brandon","server","src", "main",
+		// "resources", "firebase_config.json");
 		Path firebaseConfigPath = Paths.get(workingDirectory, "src", "main", "resources", "firebase_config.json");
 		FileInputStream serviceAccount = new FileInputStream(firebaseConfigPath.toString());
 		FirebaseOptions options = FirebaseOptions.builder()
@@ -81,6 +86,23 @@ public class FirebasePostDataSource implements PostsDataSource {
 	}
 
 	@Override
+	public List<Post> getAllPosts() {
+		// Get all dorm posts and dining posts
+		List<DormPost> dormPosts = getAllDormPost();
+		List<DiningPost> diningPosts = getAllDiningPost();
+
+		// Combine into a single list of Post objects
+		List<Post> allPosts = new ArrayList<>();
+		allPosts.addAll(dormPosts);
+		allPosts.addAll(diningPosts);
+
+		// Sort by date
+		allPosts.sort((post1, post2) -> post2.getDate().compareTo(post1.getDate())); // Most recent first
+
+		return allPosts;
+	}
+
+	@Override
 	public List<DormPost> getAllDormPost() {
 		// Retrieve all dorm posts from the "dorm_posts" reference
 		CompletableFuture<List<DormPost>> future = new CompletableFuture<>();
@@ -89,26 +111,46 @@ public class FirebasePostDataSource implements PostsDataSource {
 		dormPostsRef.addListenerForSingleValueEvent(new ValueEventListener() {
 			@Override
 			public void onDataChange(DataSnapshot dataSnapshot) {
-				for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-					// Create a DormPost from the data
-					String dormName = postSnapshot.child("dormName").getValue(String.class);
-					Integer rating = postSnapshot.child("rating").getValue(Integer.class);
-					String review = postSnapshot.child("review").getValue(String.class);
-					String postDate = postSnapshot.child("date").getValue(String.class);
-					DormPost post = new DormPost(dormName, rating, review, postDate);
-					posts.add(post);
+				try {
+					for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+						// Create a DormPost from the data
+						String dormName = postSnapshot.child("dormName").getValue(String.class);
+						Integer rating = postSnapshot.child("rating").getValue(Integer.class);
+						String review = postSnapshot.child("review").getValue(String.class);
+						LocalDateTime postDate = null;
+						try {
+							String dateStr = postSnapshot.child("date").getValue(String.class);
+							if (dateStr != null) {
+								postDate = LocalDateTime.parse(dateStr);
+							} else {
+								postDate = LocalDateTime.now();
+							}
+						} catch (Exception e) {
+							postDate = LocalDateTime.now();
+						}
+						DormPost post = new DormPost(dormName, rating, review, postDate);
+						posts.add(post);
+					}
+					future.complete(posts);
+				} catch (Exception e) {
+					e.printStackTrace();
+					future.complete(new ArrayList<>());
 				}
-				future.complete(posts);
+
 			}
 
 			@Override
 			public void onCancelled(DatabaseError databaseError) {
-				future.completeExceptionally(databaseError.toException());
+				System.err.println("Firebase query cancelled: " + databaseError.getMessage());
+				future.complete(new ArrayList<>());
 			}
 		});
 
 		try {
-			return future.get();
+			return future.get(3, TimeUnit.SECONDS);
+		} catch (TimeoutException te) {
+			System.err.println("Timeout fetching dining posts after 3 seconds");
+			return new ArrayList<>();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ArrayList<>();
@@ -120,29 +162,56 @@ public class FirebasePostDataSource implements PostsDataSource {
 		// Retrieve all dining posts from Firebase
 		CompletableFuture<List<DiningPost>> future = new CompletableFuture<>();
 		List<DiningPost> posts = new ArrayList<>();
+
 		diningPostsRef.addListenerForSingleValueEvent(new ValueEventListener() {
 			@Override
 			public void onDataChange(DataSnapshot dataSnapshot) {
-				for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-					// Create a DiningPost from the data
-					String hallName = postSnapshot.child("hallName").getValue(String.class);
-					String meals = postSnapshot.child("meals").getValue(String.class);
-					Integer rating = postSnapshot.child("rating").getValue(Integer.class);
-					String review = postSnapshot.child("review").getValue(String.class);
-					String postDate = postSnapshot.child("date").getValue(String.class);
-					DiningPost post = new DiningPost(hallName, meals, rating, review, postDate);
-					posts.add(post);
+				try {
+					for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+						// Create a DiningPost
+						String hallName = postSnapshot.child("hallName").getValue(String.class);
+						String meals = postSnapshot.child("meals").getValue(String.class);
+						Integer rating = postSnapshot.child("rating").getValue(Integer.class);
+						String review = postSnapshot.child("review").getValue(String.class);
+
+						LocalDateTime postDate = null;
+						try {
+							// Try getting as string first
+							String dateStr = postSnapshot.child("date").getValue(String.class);
+							if (dateStr != null) {
+								postDate = LocalDateTime.parse(dateStr);
+							} else {
+								// Use current time as default
+								postDate = LocalDateTime.now();
+							}
+						} catch (Exception e) {
+							// Default to current time if parsing fails
+							postDate = LocalDateTime.now();
+						}
+
+						DiningPost post = new DiningPost(hallName, meals, rating, review, postDate);
+						posts.add(post);
+
+					}
+					future.complete(posts);
+				} catch (Exception e) {
+					e.printStackTrace();
+					future.complete(new ArrayList<>()); // Complete with empty list on error
 				}
-				future.complete(posts);
 			}
 
 			@Override
 			public void onCancelled(DatabaseError databaseError) {
-				future.completeExceptionally(databaseError.toException());
+				System.err.println("Firebase query cancelled: " + databaseError.getMessage());
+				future.complete(new ArrayList<>()); // Return empty list instead of throwing
 			}
 		});
+
 		try {
-			return future.get();
+			return future.get(3, TimeUnit.SECONDS);
+		} catch (TimeoutException te) {
+			System.err.println("Timeout fetching dining posts after 3 seconds");
+			return new ArrayList<>();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ArrayList<>();
@@ -151,31 +220,38 @@ public class FirebasePostDataSource implements PostsDataSource {
 
 	@Override
 	public List<String> getDormReviewsByName(String dormName) {
-		// Retrieve dorm reviews by name from Firebase
 		CompletableFuture<List<String>> future = new CompletableFuture<>();
 		List<String> reviews = new ArrayList<>();
-		dormPostsRef.orderByChild("dormName").equalTo(dormName)
-				.addListenerForSingleValueEvent(new ValueEventListener() {
-					@Override
-					public void onDataChange(DataSnapshot dataSnapshot) {
-						for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-							String review = postSnapshot.child("review").getValue(String.class);
+
+		// Get all dorm posts
+		dormPostsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+			@Override
+			public void onDataChange(DataSnapshot dataSnapshot) {
+				String searchName = dormName.toLowerCase();
+
+				for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+					String dbDormName = postSnapshot.child("dormName").getValue(String.class);
+
+					if (dbDormName != null && dbDormName.toLowerCase().contains(searchName)) {
+						String review = postSnapshot.child("review").getValue(String.class);
+						if (review != null) {
 							reviews.add(review);
 						}
-						future.complete(reviews);
 					}
+				}
+				future.complete(reviews);
+			}
 
-					@Override
-					public void onCancelled(DatabaseError databaseError) {
-						future.completeExceptionally(databaseError.toException());
-					}
-				});
+			@Override
+			public void onCancelled(DatabaseError databaseError) {
+				future.complete(reviews);
+			}
+		});
+
 		try {
-			return future.get();
+			return future.get(3, TimeUnit.SECONDS);
 		} catch (Exception e) {
-			e.printStackTrace();
-			return new ArrayList<>();
+			return reviews;
 		}
 	}
-
 }

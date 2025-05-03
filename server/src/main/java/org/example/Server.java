@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 import org.example.Handlers.GetDormsHandler;
-import org.example.Handlers.AddDormPostsHandler;
+import org.example.Handlers.AddPostHandler;
+import org.example.Handlers.GetAllPostsHandler;
+import org.example.Handlers.GetDormReviews;
 import org.example.Posts.PostsDataSource;
 import org.example.Handlers.SearchHandler;
 import org.example.Posts.FirebasePostDataSource;
@@ -38,7 +40,9 @@ public class Server {
     // fetches the data at http://localhost:3232/search?query=quiet Or /info?query=getAllDorms
     Spark.get("/search", new SearchHandler(dataSource));
     Spark.get("/info", new GetDormsHandler(dataSource));
-	Spark.post("/add-dorm-post", new AddDormPostsHandler(postsDataSource));
+  Spark.post("/add-post", new AddPostHandler(postsDataSource));
+  Spark.get("/get-all-posts", new GetAllPostsHandler(postsDataSource));
+  Spark.get("/dorm-reviews", new GetDormReviews(postsDataSource));
 
     Spark.notFound(
         (request, response) -> {

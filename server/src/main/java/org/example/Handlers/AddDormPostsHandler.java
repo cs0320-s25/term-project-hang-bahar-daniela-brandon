@@ -3,8 +3,6 @@ package org.example.Handlers;
 import com.google.gson.Gson;
 import org.example.Posts.PostsDataSource;
 
-import java.util.HashMap;
-import java.util.Map;
 
 import org.example.Posts.DormPost;
 import spark.Request;
@@ -33,7 +31,7 @@ public class AddDormPostsHandler implements Route {
 			DormPost post = gson.fromJson(body, DormPost.class);
 			if (post.getDormName() == null || post.getDormName().isEmpty()) {
 				res.status(400);
-				return "Invalid post data";
+				return "Invalid Dorm name data";
 			}
 			if (post.getRating() < 0 || post.getRating() > 5 || post.getRating() == null
 					|| post.getReview().isEmpty()) {

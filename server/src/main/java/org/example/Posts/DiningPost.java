@@ -2,7 +2,7 @@ package org.example.Posts;
 
 import java.util.List;
 import java.util.Set;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class DiningPost {
@@ -17,7 +17,7 @@ public class DiningPost {
 		this.meals = meals;
 		this.rating = rating;
 		this.review = review;
-		this.date = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
+		this.date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
 	}
 
 	// Getters

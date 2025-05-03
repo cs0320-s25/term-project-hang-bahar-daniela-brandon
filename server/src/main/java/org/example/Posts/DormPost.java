@@ -1,7 +1,5 @@
 package org.example.Posts;
-import java.util.List;
-import java.util.Set;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 
@@ -16,7 +14,7 @@ public class DormPost {
        this.dormName = dormName;
        this.rating = rating;
        this.review = review;
-       this.date = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
+       this.date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
    }
 
 
@@ -32,19 +30,5 @@ public class DormPost {
    }
    public String getDate() {
        return date;
-   }
-
-   //Setters
-   public void setDormName(String dormName) {
-	   this.dormName = dormName;
-   }
-   public void setRating(Integer rating) {
-	   this.rating = rating;
-   }
-   public void setReview(String review) {
-	   this.review = review;
-   }
-   public void setDate(String date) {
-	   this.date = date;
    }
 }

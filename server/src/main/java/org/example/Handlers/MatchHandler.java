@@ -18,7 +18,6 @@ public class MatchHandler implements Route {
 
   public MatchHandler(DormDataSource dataSource) {
     this.dataSource = dataSource;
-    System.out.println("entered matchhandler constructor");
 
   }
 

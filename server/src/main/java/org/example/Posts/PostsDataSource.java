@@ -15,4 +15,6 @@ public interface PostsDataSource {
 
 	List<AbstractPost> getAllPosts();
 
+	Integer getAverageRatingsByName(String name);
+
 }

@@ -14,6 +14,7 @@ import org.example.Handlers.MatchHandler;
 import org.example.Handlers.AddPostHandler;
 import org.example.Handlers.GetAllPostsHandler;
 import org.example.Handlers.GetDormReviews;
+import org.example.Handlers.AverageRatingHandler;
 import org.example.Posts.PostsDataSource;
 
 
@@ -56,7 +57,8 @@ public class Server {
        Spark.post("/add-post", new AddPostHandler(postsDataSource));
        Spark.get("/get-posts", new GetAllPostsHandler(postsDataSource));
        Spark.get("/reviews", new GetDormReviews(postsDataSource));
-   Spark.post("/match", new MatchHandler(dataSource));
+	   Spark.post("/match", new MatchHandler(dataSource));
+	   Spark.get("/average-rating", new AverageRatingHandler(postsDataSource));
 
 
        Spark.notFound(

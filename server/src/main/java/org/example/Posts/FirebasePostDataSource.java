@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import java.util.Map;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.time.LocalDateTime;
@@ -257,5 +258,88 @@ public class FirebasePostDataSource implements PostsDataSource {
 		} catch (Exception e) {
 			return reviews;
 		}
+	}
+
+	@Override
+	public Integer getAverageRatingsByName(String name) {
+		CompletableFuture<Integer> future = new CompletableFuture<>();
+		List<Integer> ratings = new ArrayList<>();
+		String searchName = name.toLowerCase();
+
+		// First, check dorm posts
+		dormPostsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+			@Override
+			public void onDataChange(DataSnapshot dataSnapshot) {
+				for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+					String dormName = postSnapshot.child("dormName").getValue(String.class);
+
+					if (dormName != null && dormName.toLowerCase().contains(searchName)) {
+						Integer rating = postSnapshot.child("rating").getValue(Integer.class);
+						if (rating != null) {
+							ratings.add(rating);
+						}
+					}
+				}
+
+				// After checking dorms, check dining halls
+				checkDiningPostsForAverage(searchName, ratings, future);
+			}
+
+			@Override
+			public void onCancelled(DatabaseError databaseError) {
+				System.err.println("Firebase query cancelled: " + databaseError.getMessage());
+				checkDiningPostsForAverage(searchName, ratings, future);
+			}
+		});
+
+		try {
+			// This will block until the future is completed
+			return future.get(6, TimeUnit.SECONDS);
+		} catch (TimeoutException te) {
+			System.err.println("Timeout fetching ratings after 6 seconds");
+			return calculateAverage(ratings); // Return average of what we have so far
+		} catch (Exception e) {
+			e.printStackTrace();
+			return calculateAverage(ratings);
+		}
+	}
+
+	private void checkDiningPostsForAverage(String searchName, List<Integer> ratings,
+			CompletableFuture<Integer> future) {
+		diningPostsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+			@Override
+			public void onDataChange(DataSnapshot dataSnapshot) {
+				for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+					String hallName = postSnapshot.child("hallName").getValue(String.class);
+
+					if (hallName != null && hallName.toLowerCase().contains(searchName)) {
+						Integer rating = postSnapshot.child("rating").getValue(Integer.class);
+						if (rating != null) {
+							ratings.add(rating);
+						}
+					}
+				}
+				// Complete the future with the calculated average
+				future.complete(calculateAverage(ratings));
+			}
+
+			@Override
+			public void onCancelled(DatabaseError databaseError) {
+				System.err.println("Firebase query cancelled: " + databaseError.getMessage());
+				// Complete the future with whatever ratings we have
+				future.complete(calculateAverage(ratings));
+			}
+		});
+	}
+
+	private Integer calculateAverage(List<Integer> ratings) {
+		if (ratings.isEmpty()) {
+			return 0;
+		}
+		int sum = 0;
+		for (Integer rating : ratings) {
+			sum += rating;
+		}
+		return sum / ratings.size();
 	}
 }

@@ -1,7 +1,9 @@
 package org.example.Handlers;
 
+import org.example.Dorms.DormDataSource;
+
 import com.google.gson.Gson;
-import org.example.DormDataSource;
+
 import spark.Request;
 import spark.Response;
 import spark.Route;

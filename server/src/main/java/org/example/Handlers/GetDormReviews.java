@@ -30,7 +30,7 @@ public class GetDormReviews implements Route {
 			List<String> reviews = dataSource.getDormReviewsByName(dormName);
 			if (reviews == null || reviews.isEmpty()) {
 				res.status(404);
-				return "No reviews found for the specified dorm";
+				return "No reviews found for the specified dorm: " + dormName;
 			}
 
 			return gson.toJson(reviews);

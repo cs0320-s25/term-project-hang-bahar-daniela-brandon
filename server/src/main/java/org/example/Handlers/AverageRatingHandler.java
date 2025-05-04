@@ -7,10 +7,8 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-import java.util.List;
 public class AverageRatingHandler  implements Route {
 	private PostsDataSource dataSource;
-	private Gson gson = new Gson();
 
 	public AverageRatingHandler(PostsDataSource dataSource) {
 		this.dataSource = dataSource;

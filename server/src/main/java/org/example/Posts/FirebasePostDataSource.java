@@ -51,7 +51,7 @@ public class FirebasePostDataSource implements PostsDataSource {
 
 		try {
 			if (isDormPost(post.getType())) {
-				postValues.put("type", "dorm");
+				postValues.put("type", post.getType());
 				ApiFuture<DocumentReference> future = dormPostsRef.add(postValues);
 				try {
 					DocumentReference documentReference = future.get();
@@ -61,7 +61,7 @@ public class FirebasePostDataSource implements PostsDataSource {
 				}
 			} else if (isDiningPost(post.getType())) {
 				DiningPost diningPost = (DiningPost) post;
-				postValues.put("type", "dining");
+				postValues.put("type", post.getType());
 				postValues.put("meals", diningPost.getMeals());
 
 				ApiFuture<DocumentReference> future = diningPostsRef.add(postValues);

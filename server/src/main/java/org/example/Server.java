@@ -57,16 +57,16 @@ public class Server {
        Spark.post("/add-post", new AddPostHandler(postsDataSource));
        Spark.get("/get-posts", new GetAllPostsHandler(postsDataSource));
        Spark.get("/reviews", new GetDormReviews(postsDataSource));
-	   Spark.post("/match", new MatchHandler(dataSource));
-	   Spark.get("/average-rating", new AverageRatingHandler(postsDataSource));
+       Spark.post("/match", new MatchHandler(dataSource));
+       Spark.get("/average-rating", new AverageRatingHandler(postsDataSource));
 
 
-       Spark.notFound(
-               (request, response) -> {
-                   response.status(404); // Not Found
-                   System.err.println("ERROR");
-                   return "404 Not Found - The requested endpoint does not exist.";
-               });
+    //    Spark.notFound(
+    //            (request, response) -> {
+    //                response.status(404); // Not Found
+    //                System.err.println("ERROR");
+    //                return "404 Not Found - The requested endpoint does not exist.";
+    //            });
 
 
 

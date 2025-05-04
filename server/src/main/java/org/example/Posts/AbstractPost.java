@@ -8,14 +8,29 @@ public abstract class AbstractPost {
 	protected String review;
 	protected String date;
 	protected String title;
-
-	public AbstractPost(String title, Integer rating, String review, LocalDateTime date) {
+	protected String type;
+	protected String name;
+	public AbstractPost(String type, String title, String name, Integer rating, String review, LocalDateTime date) {
+		this.type = type;
 		this.title = title;
+		this.name = name;
 		this.rating = rating;
 		this.review = review;
 		this.date = date != null ? date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) : null;
 	}
 
+	public String getTitle() {
+		return title;
+	}
+	public String getType() {
+		return type;
+	}
+
+	
+	public String getName() {
+		return name;
+	}
+	
 	public Integer getRating() {
 		return rating;
 	}
@@ -28,7 +43,7 @@ public abstract class AbstractPost {
 		return date;
 	}
 
-	public String getTitle() {
-		return title;
-	}
+	
+
+	
 }

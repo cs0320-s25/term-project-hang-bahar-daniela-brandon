@@ -68,9 +68,6 @@ public class Server {
     //                return "404 Not Found - The requested endpoint does not exist.";
     //            });
 
-
-
-
        Spark.init();
        Spark.awaitInitialization();
        System.out.println("Server started at http://localhost:" + port);
@@ -85,6 +82,8 @@ public class Server {
 
            Map<String, Set<String>> dorm_room_types = new DormRoomTypesParser().parseDormRoomTypes(
                    "/Users/hangnguyen/Desktop/Academics/CS320/term-project-hang-bahar-daniela-brandon/dorm.csv");
+//         Map<String, Set<String>> dorm_room_types = new DormRoomTypesParser().parseDormRoomTypes(
+//             "/Users/bahar/Desktop/dorm.csv");
            Map<String, Integer> accessibilityMap = AccessibilityFetcher.fetchAccessibility();
 
 

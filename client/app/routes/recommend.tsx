@@ -89,15 +89,15 @@ export default function FindRoom() {
           </div>
 
           <div className="mb-4">
-            <label className="block font-medium mb-2 text-black">Has AC?</label>
+            <label htmlFor="hasAC" className="block font-medium mb-2 text-black">Has AC?</label>
             <input
               type="checkbox"
               name="hasAC"
               checked={formData.hasAC}
               onChange={handleChange}
-              className="mr-2 text-black"
+              className="mr-2 text-red"
             />
-            Yes
+            <label className="text-black text-center">Yes</label>
           </div>
 
           <div className="mb-4">
@@ -109,7 +109,7 @@ export default function FindRoom() {
               onChange={handleChange}
               className="mr-2 text-black"
             />
-            Yes
+            <label className="text-black text-center">Yes</label>
           </div>
 
           <div className="mb-4">

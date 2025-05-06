@@ -21,13 +21,12 @@ public class MockDormDataSource implements DormDataSource {
         new HashSet<>(Arrays.asList("shared", "private")),
         new HashSet<>(Arrays.asList("Sharpe Refectory", "Main Green")),
         new HashSet<>(Arrays.asList("sorority housing")),
-        false,
+        3,
         Arrays.asList(
             "this dorm is really good and clean and nice",
             "can be loud with parties",
             "highly recommend"
-        ),
-        true
+        )
     ));
 
     // Hegeman dorm
@@ -37,12 +36,11 @@ public class MockDormDataSource implements DormDataSource {
         new HashSet<>(Collections.singletonList("shared")),
         new HashSet<>(Arrays.asList("Sharpe Refectory", "Sciences Library")),
         new HashSet<>(Arrays.asList("quiet housing")),
-        false,
+        2,
         Arrays.asList(
             "quiet housing",
             "loud thayer"
-        ),
-        true
+        )
     ));
 
     // Young Orchard dorm
@@ -52,11 +50,10 @@ public class MockDormDataSource implements DormDataSource {
         new HashSet<>(Collections.singletonList("private")),
         new HashSet<>(Arrays.asList("TF Green Hall", "Orwig Music Library")),
         new HashSet<>(Arrays.asList("religious housing")),
-        true,
+        1,
         Arrays.asList(
             "so far away from everything, but suites come with kitchens and private bathroom"
-        ),
-        false
+        )
     ));
   }
 
@@ -129,12 +126,6 @@ public class MockDormDataSource implements DormDataSource {
       }
     }
 
-    if (preferences.has("ac")) {
-      boolean prefersAC = preferences.get("ac").getAsBoolean();
-      if (prefersAC == dorm.hasAC()) {
-        score += 5;
-      }
-    }
 
     if (preferences.has("accessible")) {
       boolean needsAccessible = preferences.get("accessible").getAsBoolean();

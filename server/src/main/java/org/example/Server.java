@@ -7,6 +7,7 @@ import static spark.Spark.after;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
+import org.example.DormDataSourceFactory.DataSourceType;
 import org.example.Handlers.GetDormsHandler;
 import org.example.Handlers.MatchHandler;
 
@@ -31,7 +32,7 @@ import spark.Spark;
 public class Server {
 
 
-   public static void setUpServer() {
+   public static void setUpServer() throws IOException {
        System.out.println("Starting server...");
        int port = 5678;
        Spark.port(port);
@@ -43,7 +44,10 @@ public class Server {
 
 
        DormDataSource dataSource = DormDataSourceFactory.createDataSource(DormDataSourceFactory.DataSourceType.MOCK);
-       PostsDataSource postsDataSource;
+
+       DormDataSource firebaseDS = DormDataSourceFactory.createDataSource(DataSourceType.FIREBASE);
+
+     PostsDataSource postsDataSource;
        try {
            postsDataSource = new FirebasePostDataSource();
        } catch (IOException e) {
@@ -57,7 +61,7 @@ public class Server {
        Spark.post("/add-post", new AddPostHandler(postsDataSource));
        Spark.get("/get-posts", new GetAllPostsHandler(postsDataSource));
        Spark.get("/reviews", new GetDormReviews(postsDataSource));
-       Spark.post("/match", new MatchHandler(dataSource));
+       Spark.post("/match", new MatchHandler(firebaseDS));
        Spark.get("/average-rating", new AverageRatingHandler(postsDataSource));
 
 
@@ -80,10 +84,10 @@ public class Server {
        try {
 
 
-           Map<String, Set<String>> dorm_room_types = new DormRoomTypesParser().parseDormRoomTypes(
-                   "/Users/hangnguyen/Desktop/Academics/CS320/term-project-hang-bahar-daniela-brandon/dorm.csv");
-//         Map<String, Set<String>> dorm_room_types = new DormRoomTypesParser().parseDormRoomTypes(
-//             "/Users/bahar/Desktop/dorm.csv");
+//           Map<String, Set<String>> dorm_room_types = new DormRoomTypesParser().parseDormRoomTypes(
+//                   "/Users/hangnguyen/Desktop/Academics/CS320/term-project-hang-bahar-daniela-brandon/dorm.csv");
+         Map<String, Set<String>> dorm_room_types = new DormRoomTypesParser().parseDormRoomTypes(
+             "/Users/bahar/Desktop/dorm.csv");
            Map<String, Integer> accessibilityMap = AccessibilityFetcher.fetchAccessibility();
 
 

@@ -22,13 +22,7 @@ public class AverageRatingHandler  implements Route {
 			return "Missing dorm or dining hall name";
 		}
 		try {
-			Integer rating= dataSource.getAverageRatingsByName(name);
-			if (rating == null || rating == 0) {
-				res.status(404);
-				return "No ratings found for the specified dorm or dining hall: " + name;
-			}
-
-			return rating;
+			return dataSource.getAverageRatingsByName(name);
 
 		} catch (Exception e) {
 			res.status(500);

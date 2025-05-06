@@ -21,9 +21,8 @@ public class GetAllPostsHandler implements Route {
 
 	@Override
 	public Object handle(Request req, Response res) throws Exception {
-		try {
-			List<AbstractPost> allPosts = dataSource.getAllPosts();
-			return gson.toJson(allPosts);
+		try {;
+			return gson.toJson(dataSource.getAllPosts());
 		} catch (Exception e) {
 			res.status(500);
 			return "Error processing request: " + e.getMessage();

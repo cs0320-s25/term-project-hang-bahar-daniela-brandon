@@ -49,35 +49,44 @@ public class FirebasePostDataSource implements PostsDataSource {
 		postValues.put("review", post.getReview());
 		postValues.put("date", post.getDate().toString());
 
-		try {
-			if (isDormPost(post.getType())) {
-				postValues.put("type", post.getType());
-				ApiFuture<DocumentReference> future = dormPostsRef.add(postValues);
-				try {
-					DocumentReference documentReference = future.get();
-					System.out.println("Dorm post saved successfully with ID: " + documentReference.getId());
-				} catch (InterruptedException | ExecutionException e) {
-					System.err.println("Data could not be saved: " + e.getMessage());
-				}
-			} else if (isDiningPost(post.getType())) {
-				DiningPost diningPost = (DiningPost) post;
-				postValues.put("type", post.getType());
-				postValues.put("meals", diningPost.getMeals());
+		String postType = post.getType();
 
-				ApiFuture<DocumentReference> future = diningPostsRef.add(postValues);
-				try {
-					DocumentReference documentReference = future.get();
-					System.out.println("Dining post saved successfully with ID: " + documentReference.getId());
-				} catch (InterruptedException | ExecutionException e) {
-					System.err.println("Data could not be saved: " + e.getMessage());
-				}
-			} else {
-				System.err.println("Unknown post type: " + post.getType());
+		try {
+			switch (postType) {
+				case "dorm":
+					postValues.put("type", postType);
+					ApiFuture<DocumentReference> dormFuture = dormPostsRef.add(postValues);
+					try {
+						DocumentReference documentReference = dormFuture.get();
+						System.out.println("Dorm post saved successfully with ID: " + documentReference.getId());
+					} catch (InterruptedException | ExecutionException e) {
+						System.err.println("Data could not be saved: " + e.getMessage());
+					}
+					break;
+				case "dining":
+					postValues.put("type", postType);
+					DiningPost diningPost = (DiningPost) post;
+					postValues.put("type", post.getType());
+					postValues.put("meals", diningPost.getMeals());
+
+					ApiFuture<DocumentReference> diningFuture = diningPostsRef.add(postValues);
+					try {
+						DocumentReference documentReference = diningFuture.get();
+						System.out.println("Dining post saved successfully with ID: " + documentReference.getId());
+					} catch (InterruptedException | ExecutionException e) {
+						System.err.println("Data could not be saved: " + e.getMessage());
+					}
+
+					break;
+				default:
+					System.err.println("Unknown post type: " + postType);
+
 			}
+
 		} catch (Exception e) {
 			System.err.println("Error adding post: " + e.getMessage());
-			e.printStackTrace();
 		}
+
 	}
 
 	@Override
@@ -91,28 +100,17 @@ public class FirebasePostDataSource implements PostsDataSource {
 		allPosts.addAll(dormPosts);
 		allPosts.addAll(diningPosts);
 
-		// Sort by date
-		allPosts.sort((post1, post2) -> post2.getDate().compareTo(post1.getDate())); // Most recent first
-
 		return allPosts;
 	}
 
 	@Override
-	public Integer getAverageRatingsByName(String postType) {
+	public Integer getAverageRatingsByName(String name) {
 		List<AbstractPost> allPosts = getAllPosts();
 		List<Integer> ratings = new ArrayList<>();
-		String searchName = postType.toLowerCase();
+
 		for (AbstractPost post : allPosts) {
-			if (isDormPost(post.getType())) {
-				DormPost dormPost = (DormPost) post;
-				if (dormPost.getName().toLowerCase().contains(searchName)) {
-					ratings.add(dormPost.getRating());
-				}
-			} else if (isDiningPost(post.getType())) {
-				DiningPost diningPost = (DiningPost) post;
-				if (diningPost.getName().toLowerCase().contains(searchName)) {
-					ratings.add(diningPost.getRating());
-				}
+			if (post.getName().toLowerCase().contains(name.toLowerCase())) {
+				ratings.add(post.getRating());
 			}
 		}
 		return calculateAverage(ratings);
@@ -120,39 +118,14 @@ public class FirebasePostDataSource implements PostsDataSource {
 
 	@Override
 	public List<String> getDormReviewsByName(String dormName) {
-		CompletableFuture<List<String>> future = new CompletableFuture<>();
 		List<String> reviews = new ArrayList<>();
-
-		String dormNameLower = dormName.toLowerCase();
-
-		ApiFuture<QuerySnapshot> querySnapshot = dormPostsRef.get();
-
-		try {
-			QuerySnapshot snapshot = querySnapshot.get();
-
-			for (DocumentSnapshot document : snapshot.getDocuments()) {
-				// Get the name field from each document
-				String docName = document.getString("name");
-
-				if (docName != null && docName.toLowerCase().equals(dormNameLower)) {
-					String review = document.getString("review");
-					if (review != null) {
-						reviews.add(review);
-					}
-				}
+		List<DormPost> dormPosts = getAllDormPost();
+		for (DormPost post : dormPosts) {
+			if (post.getName().toLowerCase().contains(dormName.toLowerCase())) {
+				reviews.add(post.getReview());
 			}
-			future.complete(reviews);
-		} catch (InterruptedException | ExecutionException e) {
-			System.err.println("Error getting dorm reviews: " + e.getMessage());
-			future.complete(reviews);
 		}
-
-		try {
-			return future.get(3, TimeUnit.SECONDS);
-		} catch (Exception e) {
-			System.err.println("Error or timeout getting dorm reviews: " + e.getMessage());
-			return reviews;
-		}
+		return reviews;
 	}
 
 	// HELPER FUNCTIONS
@@ -235,14 +208,6 @@ public class FirebasePostDataSource implements PostsDataSource {
 			System.err.println("Error fetching dining posts: " + e.getMessage());
 			return new ArrayList<>();
 		}
-	}
-
-	public Boolean isDormPost(String postType) {
-		return postType.equalsIgnoreCase("dorm");
-	}
-
-	public Boolean isDiningPost(String postType) {
-		return postType.equalsIgnoreCase("dining");
 	}
 
 	private Integer calculateAverage(List<Integer> ratings) {

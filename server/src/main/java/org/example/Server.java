@@ -43,7 +43,7 @@ public class Server {
                });
 
 
-       DormDataSource dataSource = DormDataSourceFactory.createDataSource(DormDataSourceFactory.DataSourceType.MOCK);
+       DormDataSource mockDS = DormDataSourceFactory.createDataSource(DormDataSourceFactory.DataSourceType.MOCK);
 
        DormDataSource firebaseDS = DormDataSourceFactory.createDataSource(DataSourceType.FIREBASE);
 
@@ -56,8 +56,9 @@ public class Server {
        }
        // fetches the data at http://localhost:3232/search?query=quiet Or
        // /info?query=getAllDorms
-       Spark.get("/search", new SearchHandler(dataSource));
-       Spark.get("/info", new GetDormsHandler(dataSource));
+       Spark.get("/search", new SearchHandler(firebaseDS));
+       System.out.print("calling info");
+       Spark.get("/info", new GetDormsHandler(firebaseDS));
        Spark.post("/add-post", new AddPostHandler(postsDataSource));
        Spark.get("/get-posts", new GetAllPostsHandler(postsDataSource));
        Spark.get("/reviews", new GetDormReviews(postsDataSource));

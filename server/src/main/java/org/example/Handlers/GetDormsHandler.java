@@ -17,6 +17,7 @@ public class GetDormsHandler implements Route {
 
   @Override
   public Object handle(Request req, Response res) throws Exception {
+    System.out.println("GetDormsHandler entered");
     String query = req.queryParams("query");
     if (query == null || query.isEmpty()) {
       res.status(400);

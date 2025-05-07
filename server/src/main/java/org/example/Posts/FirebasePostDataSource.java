@@ -21,6 +21,8 @@ public class FirebasePostDataSource implements PostsDataSource {
 	private final Firestore firestore;
 	private final CollectionReference dormPostsRef;
 	private final CollectionReference diningPostsRef;
+	// private List<DormPost> dormPosts;
+	// private List<DiningPost> diningPosts;
 
 	public FirebasePostDataSource() throws IOException {
 		String workingDirectory = System.getProperty("user.dir");
@@ -38,127 +40,180 @@ public class FirebasePostDataSource implements PostsDataSource {
 		this.firestore = FirestoreClient.getFirestore();
 		this.dormPostsRef = firestore.collection("dorm_posts");
 		this.diningPostsRef = firestore.collection("dining_posts");
+		// this.dormPosts = new ArrayList<>();
+		// this.diningPosts = new ArrayList<>();
 	}
 
-	@Override
 	public void addPost(AbstractPost post) {
 		Map<String, Object> postValues = new HashMap<>();
+		postValues.put("userID", post.getUserID());
+		postValues.put("postID", post.getPostID());
 		postValues.put("title", post.getTitle());
-		postValues.put("name", post.getName());
 		postValues.put("rating", post.getRating());
-		postValues.put("review", post.getReview());
-		postValues.put("date", post.getDate().toString());
+		postValues.put("content", post.getContent());
+		postValues.put("dateTime", post.getDateTime().toString());
 
 		String postType = post.getType();
+		String location = post.getLocation();
 
 		try {
+			// Reference to the document with Location as the key
+			DocumentReference LocationDocRef;
+
 			switch (postType) {
 				case "dorm":
+					LocationDocRef = dormPostsRef.document(location);
 					postValues.put("type", postType);
-					ApiFuture<DocumentReference> dormFuture = dormPostsRef.add(postValues);
-					try {
-						DocumentReference documentReference = dormFuture.get();
-						System.out.println("Dorm post saved successfully with ID: " + documentReference.getId());
-					} catch (InterruptedException | ExecutionException e) {
-						System.err.println("Data could not be saved: " + e.getMessage());
-					}
 					break;
 				case "dining":
+					LocationDocRef = diningPostsRef.document(location);
 					postValues.put("type", postType);
+
+					// Add dining-specific fields
 					DiningPost diningPost = (DiningPost) post;
-					postValues.put("type", post.getType());
 					postValues.put("meals", diningPost.getMeals());
-
-					ApiFuture<DocumentReference> diningFuture = diningPostsRef.add(postValues);
-					try {
-						DocumentReference documentReference = diningFuture.get();
-						System.out.println("Dining post saved successfully with ID: " + documentReference.getId());
-					} catch (InterruptedException | ExecutionException e) {
-						System.err.println("Data could not be saved: " + e.getMessage());
-					}
-
 					break;
 				default:
 					System.err.println("Unknown post type: " + postType);
-
+					return;
 			}
 
+			ApiFuture<DocumentSnapshot> future = LocationDocRef.get();
+			DocumentSnapshot document = future.get();
+
+			if (document.exists()) {
+				LocationDocRef.update("posts", FieldValue.arrayUnion(postValues));
+			} else {
+				List<Map<String, Object>> posts = new ArrayList<>();
+				posts.add(postValues);
+
+				Map<String, Object> docData = new HashMap<>();
+				docData.put("posts", posts);
+
+				ApiFuture<WriteResult> writeResult = LocationDocRef.set(docData);
+				writeResult.get();
+			}
 		} catch (Exception e) {
 			System.err.println("Error adding post: " + e.getMessage());
+		}
+	}
+
+	@Override
+	public void deletePost(String userID, String postID, String location, String type) {
+		try {
+			CollectionReference collectionRef;
+			List<AbstractPost> allPosts = getAllPosts();
+			if ("dorm".equals(type)) {
+				collectionRef = dormPostsRef;
+			} else if ("dining".equals(type)) {
+				collectionRef = diningPostsRef;
+			} else {
+				System.err.println("Unknown post type: " + type);
+				return;
+			}
+
+			DocumentReference docRef = collectionRef.document(location);
+
+			firestore.runTransaction(transaction -> {
+				// Get the current document
+				DocumentSnapshot snapshot = transaction.get(docRef).get();
+
+				List<Map<String, Object>> posts = (List<Map<String, Object>>) snapshot.get("posts");
+
+				if (posts == null || posts.isEmpty()) {
+					System.err.println("No posts found for location: " + location);
+					return null;
+				}
+
+				Map<String, Object> postToDelete = null;
+				for (Map<String, Object> post : posts) {
+					if (userID.equals(post.get("userID")) && postID.equals(post.get("postID"))) {
+						postToDelete = post;
+						allPosts.removeIf(p -> p.getPostID().equals(postID) && p.getUserID().equals(userID)
+								&& p.getLocation().equals(location) && p.getType().equals(type));
+						break;
+					}
+				}
+
+				if (postToDelete != null) {
+					transaction.update(docRef, "posts", FieldValue.arrayRemove(postToDelete));
+					System.out.println("Post deleted successfully");
+				} else {
+					System.err.println("Post not found");
+				}
+
+				return null;
+			}).get();
+
+		} catch (Exception e) {
+			System.err.println("Error deleting post: " + e.getMessage());
+			e.printStackTrace();
 		}
 
 	}
 
 	@Override
 	public List<AbstractPost> getAllPosts() {
-		// Get all dorm posts and dining posts
-		List<DormPost> dormPosts = getAllDormPost();
-		List<DiningPost> diningPosts = getAllDiningPost();
-
-		// Combine into a single list of Post objects
 		List<AbstractPost> allPosts = new ArrayList<>();
-		allPosts.addAll(dormPosts);
-		allPosts.addAll(diningPosts);
-
+		allPosts.addAll(getAllDormPost());
+		allPosts.addAll(getAllDiningPost());
 		return allPosts;
 	}
 
 	@Override
-	public Integer getAverageRatingsByName(String name) {
+	public Integer getAverageRatingsByLocation(String location) {
 		List<AbstractPost> allPosts = getAllPosts();
 		List<Integer> ratings = new ArrayList<>();
 
 		for (AbstractPost post : allPosts) {
-			if (post.getName().toLowerCase().contains(name.toLowerCase())) {
+			if (post.getLocation().toLowerCase().contains(location.toLowerCase())) {
 				ratings.add(post.getRating());
 			}
 		}
 		return calculateAverage(ratings);
 	}
 
-	@Override
-	public List<String> getDormReviewsByName(String dormName) {
-		List<String> reviews = new ArrayList<>();
-		List<DormPost> dormPosts = getAllDormPost();
-		for (DormPost post : dormPosts) {
-			if (post.getName().toLowerCase().contains(dormName.toLowerCase())) {
-				reviews.add(post.getReview());
-			}
-		}
-		return reviews;
-	}
-
 	// HELPER FUNCTIONS
 	private List<DormPost> getAllDormPost() {
+		List<DormPost> posts = new ArrayList<>();
+
 		try {
 			ApiFuture<QuerySnapshot> future = dormPostsRef.get();
-			List<DormPost> posts = new ArrayList<>();
-
 			QuerySnapshot querySnapshot = future.get();
+
 			for (DocumentSnapshot document : querySnapshot.getDocuments()) {
 				try {
-					String title = document.getString("title");
-					String name = document.getString("name");
-					Long ratingLong = document.getLong("rating");
-					Integer rating = ratingLong != null ? ratingLong.intValue() : 0;
-					String review = document.getString("review");
-					LocalDateTime postDate = null;
+					String dormLocation = document.getId(); // Location is now the document ID
+					List<Map<String, Object>> postsList = (List<Map<String, Object>>) document.get("posts");
 
-					try {
-						String dateStr = document.getString("date");
-						if (dateStr != null) {
-							postDate = LocalDateTime.parse(dateStr);
-						} else {
-							postDate = LocalDateTime.now();
+					if (postsList != null) {
+						for (Map<String, Object> postData : postsList) {
+							String userID = (String) postData.get("userID");
+							String postID = (String) postData.get("postID");
+							String title = (String) postData.get("title");
+							Long ratingLong = (Long) postData.get("rating");
+							Integer rating = ratingLong != null ? ratingLong.intValue() : 0;
+							String content = (String) postData.get("content");
+							LocalDateTime postDate = null;
+
+							try {
+								String dateStr = (String) postData.get("dateTime");
+								if (dateStr != null) {
+									postDate = LocalDateTime.parse(dateStr);
+								} else {
+									postDate = LocalDateTime.now();
+								}
+							} catch (Exception e) {
+								postDate = LocalDateTime.now();
+							}
+
+							DormPost post = new DormPost(userID, postID, title, dormLocation, rating, content,
+									postDate);
+							posts.add(post);
 						}
-					} catch (Exception e) {
-						postDate = LocalDateTime.now();
 					}
-
-					DormPost post = new DormPost(title, name, rating, review, postDate);
-					posts.add(post);
 				} catch (Exception e) {
-					System.err.println("Error parsing dorm post: " + e.getMessage());
+					System.err.println("Error parsing dorm document: " + e.getMessage());
 				}
 			}
 
@@ -170,36 +225,46 @@ public class FirebasePostDataSource implements PostsDataSource {
 	}
 
 	public List<DiningPost> getAllDiningPost() {
+		List<DiningPost> posts = new ArrayList<>();
+
 		try {
 			ApiFuture<QuerySnapshot> future = diningPostsRef.get();
-			List<DiningPost> posts = new ArrayList<>();
-
 			QuerySnapshot querySnapshot = future.get();
+
 			for (DocumentSnapshot document : querySnapshot.getDocuments()) {
 				try {
-					String title = document.getString("title");
-					String name = document.getString("name");
-					String meals = document.getString("meals");
-					Long ratingLong = document.getLong("rating");
-					Integer rating = ratingLong != null ? ratingLong.intValue() : 0;
-					String review = document.getString("review");
-					LocalDateTime postDate = null;
+					String diningLocation = document.getId();
+					List<Map<String, Object>> postsList = (List<Map<String, Object>>) document.get("posts");
 
-					try {
-						String dateStr = document.getString("date");
-						if (dateStr != null) {
-							postDate = LocalDateTime.parse(dateStr);
-						} else {
-							postDate = LocalDateTime.now();
+					if (postsList != null) {
+						for (Map<String, Object> postData : postsList) {
+							String postID = (String) postData.get("postID");
+							String userID = (String) postData.get("userID");
+							String title = (String) postData.get("title");
+							Long ratingLong = (Long) postData.get("rating");
+							Integer rating = ratingLong != null ? ratingLong.intValue() : 0;
+							String content = (String) postData.get("content");
+							String meals = (String) postData.get("meals");
+							LocalDateTime postDate = null;
+
+							try {
+								String dateStr = (String) postData.get("dateTime");
+								if (dateStr != null) {
+									postDate = LocalDateTime.parse(dateStr);
+								} else {
+									postDate = LocalDateTime.now();
+								}
+							} catch (Exception e) {
+								postDate = LocalDateTime.now();
+							}
+
+							DiningPost post = new DiningPost(userID, postID, title, diningLocation, meals, rating,
+									content, postDate);
+							posts.add(post);
 						}
-					} catch (Exception e) {
-						postDate = LocalDateTime.now();
 					}
-
-					DiningPost post = new DiningPost(title, name, meals, rating, review, postDate);
-					posts.add(post);
 				} catch (Exception e) {
-					System.err.println("Error parsing dining post: " + e.getMessage());
+					System.err.println("Error parsing dining document: " + e.getMessage());
 				}
 			}
 

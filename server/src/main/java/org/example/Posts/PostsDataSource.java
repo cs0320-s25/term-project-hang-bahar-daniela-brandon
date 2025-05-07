@@ -3,22 +3,16 @@ package org.example.Posts;
 import java.util.List;
 
 public interface PostsDataSource {
-	// void addDormPost(DormPost post);
-
-	// void addDiningPost(DiningPost post);
-
 	void addPost(AbstractPost post);
 
-
+	void deletePost(String userID, String postID, String location, String type);
 
 	// List<DormPost> getAllDormPost();
 
 	// List<DiningPost> getAllDiningPost();
 
-	List<String> getDormReviewsByName(String dormName);
-
 	List<AbstractPost> getAllPosts();
 
-	Integer getAverageRatingsByName(String name);
+	Integer getAverageRatingsByLocation(String location);
 
 }

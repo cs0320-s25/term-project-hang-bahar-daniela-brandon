@@ -21,8 +21,15 @@ public class GetAllPostsHandler implements Route {
 
 	@Override
 	public Object handle(Request req, Response res) throws Exception {
-		try {;
-			return gson.toJson(dataSource.getAllPosts());
+		try {
+			List<AbstractPost> posts = dataSource.getAllPosts();
+
+			if (posts == null || posts.isEmpty()) {
+				res.status(404);
+				return "No posts found";
+			}
+
+			return gson.toJson(posts);
 		} catch (Exception e) {
 			res.status(500);
 			return "Error processing request: " + e.getMessage();

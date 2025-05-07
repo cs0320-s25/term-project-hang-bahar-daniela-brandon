@@ -4,9 +4,10 @@ import java.time.LocalDateTime;
 
 public class DiningPost extends AbstractPost {
 	private String meals;
+	
 
-	public DiningPost(String title, String hallName, String meals, Integer rating, String review, LocalDateTime date) {
-		super("dining",title, hallName,rating, review, date);
+	public DiningPost(String userID,String postID,String title, String location, String meals, Integer rating, String content, LocalDateTime dateTime) {
+		super(userID,postID,"dining",title, location,rating, content, dateTime);
 		this.meals = meals;
 
 	}

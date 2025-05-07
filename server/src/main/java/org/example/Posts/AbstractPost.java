@@ -5,45 +5,56 @@ import java.time.format.DateTimeFormatter;
 
 public abstract class AbstractPost {
 	protected Integer rating;
-	protected String review;
-	protected String date;
+	protected String content;
+	protected String dateTime;
 	protected String title;
 	protected String type;
-	protected String name;
-	public AbstractPost(String type, String title, String name, Integer rating, String review, LocalDateTime date) {
+	protected String location;
+	protected String userID;
+	protected String postID;
+
+	public AbstractPost(String userID, String postID, String type, String title, String location, Integer rating,
+			String content, LocalDateTime dateTime) {
+		this.userID = userID;
+		this.postID = postID;
 		this.type = type;
 		this.title = title;
-		this.name = name;
+		this.location = location;
 		this.rating = rating;
-		this.review = review;
-		this.date = date != null ? date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) : null;
+		this.content = content;
+		this.dateTime = dateTime != null ? dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) : null;
 	}
 
 	public String getTitle() {
 		return title;
 	}
+
 	public String getType() {
 		return type;
 	}
 
-	
-	public String getName() {
-		return name;
+	public String getLocation() {
+		return location;
 	}
-	
+
 	public Integer getRating() {
 		return rating;
 	}
 
-	public String getReview() {
-		return review;
+	public String getContent() {
+		return content;
 	}
 
-	public String getDate() {
-		return date;
+	public String getDateTime() {
+		return dateTime;
 	}
 
-	
+	public String getUserID() {
+		return userID;
+	}
 
-	
+	public String getPostID() {
+		return postID;
+	}
+
 }

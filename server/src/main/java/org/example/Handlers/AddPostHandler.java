@@ -32,9 +32,30 @@ public class AddPostHandler implements spark.Route {
 
 		try {
 			JsonObject jsonObject = JsonParser.parseString(body).getAsJsonObject();
-			String type = jsonObject.get("type").getAsString();
+
+			if (jsonObject.get("type") == null) {
+				res.status(400);
+				return "Missing post type: must be 'dining' or 'dorm'";
+			}
+			if (jsonObject.get("postID") == null) {
+				res.status(400);
+				return "Missing postID";
+			}
+			if (jsonObject.get("userID") == null) {
+				res.status(400);
+				return "Missing userID";
+			}
+			if (jsonObject.get("location") == null) {
+				res.status(400);
+				return "Missing location";
+			}
+			if (jsonObject.get("rating") == null) {
+				res.status(400);
+				return "Missing rating";
+			}
 
 			AbstractPost post;
+			String type = jsonObject.get("type").getAsString();
 
 			switch (type) {
 				case "dining":
@@ -49,7 +70,7 @@ public class AddPostHandler implements spark.Route {
 			}
 
 			dataSource.addPost(post);
-			return gson.toJson(post);
+			return "Post added successfully: " + gson.toJson(post);
 
 		} catch (Exception e) {
 			res.status(500);

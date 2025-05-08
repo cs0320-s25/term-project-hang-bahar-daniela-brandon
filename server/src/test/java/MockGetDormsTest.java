@@ -1,7 +1,6 @@
 
+import org.example.Dorms.MockDormDataSource;
 import org.example.Handlers.GetDormsHandler;
-import org.example.MockDormDataSource;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

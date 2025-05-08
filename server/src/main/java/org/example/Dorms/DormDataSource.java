@@ -1,4 +1,4 @@
-package org.example;
+package org.example.Dorms;
 
 import com.google.gson.JsonObject;
 import java.util.List;

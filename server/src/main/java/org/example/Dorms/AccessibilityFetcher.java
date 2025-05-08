@@ -1,4 +1,4 @@
-package org.example;
+package org.example.Dorms;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

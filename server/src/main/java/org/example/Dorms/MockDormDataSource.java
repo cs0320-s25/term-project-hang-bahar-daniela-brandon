@@ -1,4 +1,4 @@
-package org.example;
+package org.example.Dorms;
 
 // MockDormDataSource.java
 import com.google.gson.JsonObject;

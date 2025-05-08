@@ -98,6 +98,7 @@ public class FirebasePostDataSource implements PostsDataSource {
 		}
 	}
 
+
 	@Override
 	public void deletePost(String userID, String postID, String location, String type) {
 		try {

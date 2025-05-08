@@ -2,8 +2,10 @@ package org.example.Handlers;
 
 
 import java.util.List;
-import org.example.DormDataSource;
-import org.example.DormSearchResult;
+
+import org.example.Dorms.DormDataSource;
+import org.example.Dorms.DormSearchResult;
+
 import spark.Request;
 import spark.Response;
 import spark.Route;

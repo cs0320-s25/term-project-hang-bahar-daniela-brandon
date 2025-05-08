@@ -22,30 +22,26 @@ public class DeletePostHandler implements Route {
 
 	@Override
 	public Object handle(Request req, Response res) throws Exception {
-		String body = req.body();
-		JsonObject jsonObject = JsonParser.parseString(body).getAsJsonObject();
-
-		if (jsonObject.get("userID") == null) {
+		String postID = req.queryParams("postID");
+		String userID = req.queryParams("userID");
+		String location = req.queryParams("location");
+		String type = req.queryParams("type");
+		if (postID == null || postID.isEmpty()) {
 			res.status(400);
-			return "Missing user ID";
+			return "Missing postID";
 		}
-		if (jsonObject.get("type") == null) {
+		if (userID == null || userID.isEmpty()) {
+			res.status(400);
+			return "Missing userID";
+		}
+		if (location == null || location.isEmpty()) {
+			res.status(400);
+			return "Missing location";
+		}
+		if (type == null || type.isEmpty()) {
 			res.status(400);
 			return "Missing post type: must be 'dining' or 'dorm'";
 		}
-		if (jsonObject.get("location") == null) {
-			res.status(400);
-			return "Missing name of dorm or dining hall";
-		}
-		if (jsonObject.get("postID") == null) {
-			res.status(400);
-			return "Missing post ID";
-		}
-
-		String userID = jsonObject.get("userID").getAsString();
-		String postID = jsonObject.get("postID").getAsString();
-		String type = jsonObject.get("type").getAsString();
-		String location = jsonObject.get("location").getAsString();
 
 		try {
 			dataSource.deletePost(userID, postID, location, type);

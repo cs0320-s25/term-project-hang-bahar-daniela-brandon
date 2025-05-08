@@ -5,7 +5,12 @@ import static spark.Spark.after;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
-import org.example.DormDataSourceFactory.DataSourceType;
+
+import org.example.Dorms.AccessibilityFetcher;
+import org.example.Dorms.DormDataSource;
+import org.example.Dorms.DormDataSourceFactory;
+import org.example.Dorms.DormRoomTypesParser;
+import org.example.Dorms.DormDataSourceFactory.DataSourceType;
 import org.example.Handlers.GetDormsHandler;
 import org.example.Handlers.MatchHandler;
 import org.example.Handlers.DeletePostHandler;
@@ -56,7 +61,7 @@ public class Server {
 		Spark.get("/get-posts", new GetAllPostsHandler(postsDataSource));
 		Spark.post("/match", new MatchHandler(firebaseDS));
 		Spark.get("/average-rating", new AverageRatingHandler(postsDataSource));
-		Spark.post("/delete-post", new DeletePostHandler(postsDataSource));
+		Spark.delete("/delete-post", new DeletePostHandler(postsDataSource));
 		// Spark.get("/get-dorms", new GetDormsHandler(firebaseDS));
 		// Spark.get("/get-dining-halls", new GetDiningHallsHandler(firebaseDS));
 		// Spark.get("/get-dining-halls", new GetDiningHallsHandler(firebaseDS));

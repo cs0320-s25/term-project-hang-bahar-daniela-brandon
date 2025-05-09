@@ -58,15 +58,12 @@ public class MockPostsDataSource implements PostsDataSource {
 	}
 
 	public List<DormPost> getAllDormPost() {
-		// Create an empty list to hold the DormPost objects
+		
 		List<DormPost> dormList = new ArrayList<>();
 
-		// Iterate through each entry in the dormPosts map
 		for (Object obj : dormPosts.values()) {
-			// Cast the object to Map<String, Object>
 			Map<String, Object> postMap = (Map<String, Object>) obj;
 
-			// Extract values from the map
 			String userID = (String) postMap.get("userID");
 			String postID = (String) postMap.get("postID");
 			String dateTime = (String) postMap.get("dateTime");
@@ -75,7 +72,6 @@ public class MockPostsDataSource implements PostsDataSource {
 			String title = (String) postMap.get("title");
 			String content = (String) postMap.get("content");
 
-			// Create a new DormPost using the constructor
 			DormPost post = new DormPost(userID, postID, dateTime, location, rating, title, content);
 
 			dormList.add(post);
@@ -85,14 +81,11 @@ public class MockPostsDataSource implements PostsDataSource {
 	}
 
 	public List<DiningPost> getAllDiningPost() {
-		// Create an empty list and add each converted DiningPost to it
 		List<DiningPost> diningList = new ArrayList<>();
 
 		for (Object obj : diningPosts.values()) {
-			// You need to convert the Map<String, Object> to a DormPost
 			Map<String, Object> postMap = (Map<String, Object>) obj;
 
-			// Extract values from the map
 			String userID = (String) postMap.get("userID");
 			String postID = (String) postMap.get("postID");
 			String dateTime = (String) postMap.get("dateTime");
@@ -102,7 +95,6 @@ public class MockPostsDataSource implements PostsDataSource {
 			String content = (String) postMap.get("content");
 			String meals = (String) postMap.get("meals");
 
-			// Create a new DormPost using the constructor
 			DiningPost post = new DiningPost(userID, postID, title, location, meals, rating, content, dateTime);
 
 			diningList.add(post);

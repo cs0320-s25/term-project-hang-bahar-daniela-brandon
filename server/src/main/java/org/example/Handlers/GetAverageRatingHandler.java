@@ -8,10 +8,10 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class AverageRatingHandler implements Route {
+public class GetAverageRatingHandler implements Route {
 	private PostsDataSource dataSource;
 
-	public AverageRatingHandler(PostsDataSource dataSource) {
+	public GetAverageRatingHandler(PostsDataSource dataSource) {
 		this.dataSource = dataSource;
 	}
 

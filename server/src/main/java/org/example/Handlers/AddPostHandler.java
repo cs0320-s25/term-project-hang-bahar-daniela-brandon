@@ -24,38 +24,33 @@ public class AddPostHandler implements spark.Route {
 
 	@Override
 	public Object handle(Request req, Response res) throws Exception {
-		String body = req.body();
-		if (body == null || body.isEmpty()) {
-			res.status(400);
-			return "Missing request body";
-		}
 
 		try {
-			JsonObject jsonObject = JsonParser.parseString(body).getAsJsonObject();
+			JsonObject body = gson.fromJson(req.body(), JsonObject.class);
 
-			if (jsonObject.get("type") == null) {
+			if (body.get("type") == null) {
 				res.status(400);
 				return "Missing post type: must be 'dining' or 'dorm'";
 			}
-			if (jsonObject.get("postID") == null) {
+			if (body.get("postID") == null) {
 				res.status(400);
 				return "Missing postID";
 			}
-			if (jsonObject.get("userID") == null) {
+			if (body.get("userID") == null) {
 				res.status(400);
 				return "Missing userID";
 			}
-			if (jsonObject.get("location") == null) {
+			if (body.get("location") == null) {
 				res.status(400);
 				return "Missing location";
 			}
-			if (jsonObject.get("rating") == null) {
+			if (body.get("rating") == null) {
 				res.status(400);
 				return "Missing rating";
 			}
 
 			AbstractPost post;
-			String type = jsonObject.get("type").getAsString();
+			String type = body.get("type").getAsString();
 
 			switch (type) {
 				case "dining":

@@ -17,7 +17,7 @@ import org.example.Handlers.DeletePostHandler;
 
 import org.example.Handlers.AddPostHandler;
 import org.example.Handlers.GetAllPostsHandler;
-import org.example.Handlers.AverageRatingHandler;
+import org.example.Handlers.GetAverageRatingHandler;
 import org.example.Posts.PostsDataSource;
 
 import org.example.Handlers.SearchHandler;
@@ -60,7 +60,7 @@ public class Server {
 		Spark.post("/add-post", new AddPostHandler(postsDataSource));
 		Spark.get("/get-posts", new GetAllPostsHandler(postsDataSource));
 		Spark.post("/match", new MatchHandler(firebaseDS));
-		Spark.get("/average-rating", new AverageRatingHandler(postsDataSource));
+		Spark.get("/average-rating", new GetAverageRatingHandler(postsDataSource));
 		Spark.delete("/delete-post", new DeletePostHandler(postsDataSource));
 		// Spark.get("/get-dorms", new GetDormsHandler(firebaseDS));
 		// Spark.get("/get-dining-halls", new GetDiningHallsHandler(firebaseDS));

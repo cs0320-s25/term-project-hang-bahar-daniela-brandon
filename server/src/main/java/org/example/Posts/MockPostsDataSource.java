@@ -10,22 +10,6 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class MockPostsDataSource implements PostsDataSource {
-	// AbstractPost ratty = new DiningPost("user1", "post1", "Food Options", "The
-	// Ratty",
-	// "Cream tomato soup, cheese pizza", 5, "Many great food options!",
-	// "2023-10-01T10:00:00");
-	// AbstractPost minden = new DormPost("user2", "post2", "Laundry", "Smitty B",
-	// 3, "Laundry machines broken.",
-	// "2023-10-02T11:00:00");
-	// AbstractPost andrews = new DormPost("user1", "post1", "Roommate", "Andrews
-	// Hall", 4, "Great roommate!",
-	// "2023-10-02T11:00:00");
-	// AbstractPost andrews2 = new DormPost("user1", "post2", "Room", "Andrews
-	// Hall", 5, "in-room sink great amenity!",
-	// "2023-10-02T11:00:00");
-	// AbstractPost ivy = new DiningPost("user1", "post2", "Food Options", "Ivy
-	// Room", "Smoothie", 5,
-	// "Smoothie really goodQ", "2023-10-02T11:00:00");
 	Map<String, Object> diningPosts = new HashMap<>();
 	Map<String, Object> dormPosts = new HashMap<>();
 
@@ -47,9 +31,9 @@ public class MockPostsDataSource implements PostsDataSource {
 			postValues.put("content", post.getContent());
 		}
 		if (type.equals("dining")) {
-			diningPosts.put(location, postValues);
+			this.diningPosts.put(location, postValues);
 		} else if (type.equals("dorm")) {
-			dormPosts.put(location, postValues);
+			this.dormPosts.put(location, postValues);
 		}
 	}
 
@@ -73,15 +57,58 @@ public class MockPostsDataSource implements PostsDataSource {
 		return allPosts;
 	}
 
-	private List<DormPost> getAllDormPost() {
-		List<DormPost> dormList = this.dormPosts.values().stream().map(obj -> (DormPost) obj)
-				.collect(Collectors.toList());
+	public List<DormPost> getAllDormPost() {
+		// Create an empty list to hold the DormPost objects
+		List<DormPost> dormList = new ArrayList<>();
+
+		// Iterate through each entry in the dormPosts map
+		for (Object obj : dormPosts.values()) {
+			// Cast the object to Map<String, Object>
+			Map<String, Object> postMap = (Map<String, Object>) obj;
+
+			// Extract values from the map
+			String userID = (String) postMap.get("userID");
+			String postID = (String) postMap.get("postID");
+			String dateTime = (String) postMap.get("dateTime");
+			String location = (String) postMap.get("location");
+			Integer rating = (Integer) postMap.get("rating");
+			String title = (String) postMap.get("title");
+			String content = (String) postMap.get("content");
+
+			// Create a new DormPost using the constructor
+			DormPost post = new DormPost(userID, postID, dateTime, location, rating, title, content);
+
+			dormList.add(post);
+		}
+
 		return dormList;
 	}
 
-	private List<DiningPost> getAllDiningPost() {
-		List<DiningPost> diningList = this.diningPosts.values().stream().map(obj -> (DiningPost) obj)
-				.collect(Collectors.toList());
+	public List<DiningPost> getAllDiningPost() {
+		// Create an empty list and add each converted DiningPost to it
+		List<DiningPost> diningList = new ArrayList<>();
+
+		for (Object obj : diningPosts.values()) {
+			// You need to convert the Map<String, Object> to a DormPost
+			Map<String, Object> postMap = (Map<String, Object>) obj;
+
+			// Extract values from the map
+			String userID = (String) postMap.get("userID");
+			String postID = (String) postMap.get("postID");
+			String dateTime = (String) postMap.get("dateTime");
+			String location = (String) postMap.get("location");
+			Integer rating = (Integer) postMap.get("rating");
+			String title = (String) postMap.get("title");
+			String content = (String) postMap.get("content");
+			String meals = (String) postMap.get("meals");
+
+			// Create a new DormPost using the constructor
+			DiningPost post = new DiningPost(userID, postID, title, location, meals, rating, content, dateTime);
+
+			diningList.add(post);
+
+		}
+
 		return diningList;
 	}
 

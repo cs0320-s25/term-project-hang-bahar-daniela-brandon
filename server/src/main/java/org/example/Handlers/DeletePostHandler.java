@@ -46,7 +46,7 @@ public class DeletePostHandler implements Route {
 		try {
 			dataSource.deletePost(userID, postID, location, type);
 			res.status(200);
-			return "Post deleted successfully " + postID;
+			return "Post deleted successfully!";
 		} catch (Exception e) {
 			res.status(500);
 			return "Error processing request: " + e.getMessage();

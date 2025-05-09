@@ -14,7 +14,7 @@ public abstract class AbstractPost {
 	protected String postID;
 
 	public AbstractPost(String userID, String postID, String type, String title, String location, Integer rating,
-			String content, LocalDateTime dateTime) {
+			String content, String dateTime) {
 		this.userID = userID;
 		this.postID = postID;
 		this.type = type;
@@ -22,7 +22,7 @@ public abstract class AbstractPost {
 		this.location = location;
 		this.rating = rating;
 		this.content = content;
-		this.dateTime = dateTime != null ? dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) : null;
+		this.dateTime = dateTime;
 	}
 
 	public String getTitle() {

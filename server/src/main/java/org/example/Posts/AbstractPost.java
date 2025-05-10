@@ -1,8 +1,5 @@
 package org.example.Posts;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 public abstract class AbstractPost {
 	protected Integer rating;
 	protected String content;
@@ -24,7 +21,7 @@ public abstract class AbstractPost {
 		this.rating = rating;
 		this.content = content;
 		this.dateTime = dateTime;
-		this.imageURL  = imageURL;
+		this.imageURL = imageURL;
 	}
 
 	public String getTitle() {

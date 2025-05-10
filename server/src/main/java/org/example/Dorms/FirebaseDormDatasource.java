@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import org.apache.commons.text.similarity.LevenshteinDistance;
 
 public class FirebaseDormDatasource implements DormDataSource {
 
@@ -289,33 +290,52 @@ public class FirebaseDormDatasource implements DormDataSource {
   }
 
   private int calculateDormScore(Dorm dorm, String query) {
+    LevenshteinDistance ld = new LevenshteinDistance(Integer.MAX_VALUE);
+    String normalizedQuery = query.toLowerCase();
     int score = 0;
 
-    // Check dorm name (exact match)
-    if (dorm.getName().toLowerCase().equals(query)) {
+    // Check dorm name (allow typo)
+    if (dorm.getName().equals(normalizedQuery)) {
       score += 10;
-    }
-    // Partial match in name
-    else if (dorm.getName().toLowerCase().contains(query)) {
+    } else if (dorm.getName().contains(normalizedQuery)) {
       score += 7;
+    } else {
+      int distance = ld.apply(dorm.getName(), normalizedQuery);
+      if (distance <= 2) {
+        score += 5;
+      }
     }
-
     // Check room types
     for (String roomType : dorm.getRoomTypes()) {
-      if (roomType.toLowerCase().contains(query)) {
+      if (roomType.toLowerCase().contains(normalizedQuery)) {
         score += 5;
+      } else {
+        int distance = ld.apply(roomType.toLowerCase(), normalizedQuery);
+        if (distance <= 2) {
+          score += 3;
+        }
       }
     }
     // Check communities
     for (String community : dorm.getCommunities()) {
-      if (community.toLowerCase().contains(query)) {
-        score += 4;
+      if (community.toLowerCase().contains(normalizedQuery)) {
+        score += 6;
+      } else {
+        int distance = ld.apply(community.toLowerCase(), normalizedQuery);
+        if (distance <= 2) {
+          score += 4;
+        }
       }
     }
     // Check proximity
     for (String location : dorm.getProximity()) {
-      if (location.toLowerCase().contains(query)) {
+      if (location.toLowerCase().contains(normalizedQuery)) {
         score += 3;
+      } else {
+        int distance = ld.apply(location.toLowerCase(), normalizedQuery);
+        if (distance <= 2) {
+          score += 2;
+        }
       }
     }
     return score;

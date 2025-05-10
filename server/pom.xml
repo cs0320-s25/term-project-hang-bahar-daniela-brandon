@@ -116,6 +116,14 @@
             <version>4.11.0</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- Apache commons text for checking typos in search -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.13.1</version>
+        </dependency>
+
     </dependencies>
 
     <build>

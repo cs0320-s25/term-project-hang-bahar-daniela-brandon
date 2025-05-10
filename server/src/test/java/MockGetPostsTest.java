@@ -73,6 +73,18 @@ public class MockGetPostsTest {
 		body1.addProperty("dateTime", "2023-10-02T11:00:00");
 		body1.addProperty("title", "Great dorm experience!");
 		tryRequest(body1);
+		
+		JsonObject dormBody2 = new JsonObject();
+		dormBody2.addProperty("postID", "124");
+		dormBody2.addProperty("userID", "456");
+		dormBody2.addProperty("location", "Goddard");
+		dormBody2.addProperty("rating", 4.5);
+		dormBody2.addProperty("content", "good dorm");
+		dormBody2.addProperty("dateTime", "2023-10-02T11:00:00");
+		dormBody2.addProperty("title", "Great dorm experience!");
+		dormBody2.addProperty("type", "dorm");
+		dormBody2.addProperty("imageURL", "https://drive.google.com/uc?id=1DrYrEQWsJGyYuOIvN0GB8JiDAYmo7d0a");
+		tryRequest(dormBody2);
 
 		String result = tryRequest();
 		assertTrue(result.contains("Goddard"));

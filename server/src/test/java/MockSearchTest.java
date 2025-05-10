@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-
 import spark.Request;
 import spark.Response;
 
@@ -63,7 +62,7 @@ public class MockSearchTest {
 		String result = tryRequest(null);
 		Assertions.assertTrue(result.contains("Missing query parameter"));
 	}
-	
+
 	@Test
 	public void testSearchNonexistent() {
 		String result = tryRequest("quiet@#$%");

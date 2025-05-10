@@ -1,9 +1,14 @@
 package org.example.Posts;
 
-import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.DriveScopes;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.FileContent;
 
 import com.google.cloud.firestore.*;
 import com.google.firebase.FirebaseApp;
@@ -11,23 +16,12 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
 
 import java.io.FileInputStream;
-import java.io.IOException;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.File;
-
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.DriveScopes;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.http.HttpTransport;
-
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
-import com.google.api.core.ApiFuture;
-import com.google.api.client.http.FileContent;
 
 public class FirebasePostDataSource implements PostsDataSource {
 	// Firebase Firestore references
@@ -102,7 +96,7 @@ public class FirebasePostDataSource implements PostsDataSource {
 			}
 
 		} catch (Exception e) {
-			System.err.println("Error adding post: " + e.getMessage());
+			throw new RuntimeException("Error adding post: " + e.getMessage(), e);
 		}
 	}
 
@@ -117,17 +111,16 @@ public class FirebasePostDataSource implements PostsDataSource {
 			fileMetadata.setParents(Collections.singletonList(folderID));
 			String mimeType = getMimeType(file);
 			FileContent content = new FileContent(mimeType, file);
-			com.google.api.services.drive.model.File uploadedFile = drive.files().create(fileMetadata, content)
+			com.google.api.services.drive.model.File uploadedFile = drive.files()
+					.create(fileMetadata, content)
 					.setFields("id")
 					.execute();
 			String imageURL = "https://drive.google.com/uc?id=" + uploadedFile.getId();
 			file.delete();
 			return imageURL;
 		} catch (Exception e) {
-			System.err.println("Error uploading image: " + e.getMessage());
+			throw new RuntimeException("Error uploading image: " + e.getMessage(), e);
 		}
-
-		return null;
 	}
 
 	@Override
@@ -140,46 +133,34 @@ public class FirebasePostDataSource implements PostsDataSource {
 			} else if ("dining".equals(type)) {
 				collectionRef = diningPostsRef;
 			} else {
-				System.err.println("Unknown post type: " + type);
-				return;
+				throw new IllegalArgumentException("Unknown post type: " + type);
 			}
 
 			DocumentReference docRef = collectionRef.document(location);
 
 			firestore.runTransaction(transaction -> {
-				// Get the current document
 				DocumentSnapshot snapshot = transaction.get(docRef).get();
 
 				List<Map<String, Object>> posts = (List<Map<String, Object>>) snapshot.get("posts");
 
 				if (posts == null || posts.isEmpty()) {
-					System.err.println("No posts found for location: " + location);
-					return null;
+					throw new NoSuchElementException("No posts found for location: " + location);
 				}
 
-				Map<String, Object> postToDelete = null;
 				for (Map<String, Object> post : posts) {
 					if (userID.equals(post.get("userID")) && postID.equals(post.get("postID"))) {
-						postToDelete = post;
+						transaction.update(docRef, "posts", FieldValue.arrayRemove(post));
 						allPosts.removeIf(p -> p.getPostID().equals(postID) && p.getUserID().equals(userID)
 								&& p.getLocation().equals(location) && p.getType().equals(type));
 						break;
 					}
 				}
-
-				if (postToDelete != null) {
-					transaction.update(docRef, "posts", FieldValue.arrayRemove(postToDelete));
-					System.out.println("Post deleted successfully");
-				} else {
-					System.err.println("Post not found");
-				}
-
 				return null;
 			}).get();
 
 		} catch (Exception e) {
-			System.err.println("Error deleting post: " + e.getMessage());
 			e.printStackTrace();
+			throw new RuntimeException("Error deleting post: " + e.getMessage(), e);
 		}
 
 	}
@@ -227,8 +208,7 @@ public class FirebasePostDataSource implements PostsDataSource {
 
 			return posts;
 		} catch (Exception e) {
-			System.err.println("Error fetching dorm posts: " + e.getMessage());
-			return new ArrayList<>();
+			throw new RuntimeException("Error fetching dorm posts: " + e.getMessage(), e);
 		}
 	}
 
@@ -256,7 +236,6 @@ public class FirebasePostDataSource implements PostsDataSource {
 
 				if (postsList != null) {
 					for (Map<String, Object> postData : postsList) {
-						// Create DiningPost from the map data with proper null handling
 						DiningPost post = createDiningPostFromMap(postData, diningLocation);
 						posts.add(post);
 					}
@@ -265,8 +244,7 @@ public class FirebasePostDataSource implements PostsDataSource {
 			}
 			return posts;
 		} catch (InterruptedException | ExecutionException e) {
-			System.err.println("Error fetching dining posts: " + e.getMessage());
-			return new ArrayList<>();
+			throw new RuntimeException("Error fetching dining posts: " + e.getMessage(), e);
 		}
 	}
 
@@ -303,16 +281,14 @@ public class FirebasePostDataSource implements PostsDataSource {
 			try {
 				httpTransport = GoogleNetHttpTransport.newTrustedTransport();
 			} catch (java.security.GeneralSecurityException e) {
-				System.err.println("Error creating Drive service: " + e.getMessage());
-				return null;
+				throw new RuntimeException("Error creating Drive service: " + e.getMessage(), e);
 			}
 			return new Drive.Builder(httpTransport, JSON_FACTORY, credential)
 					.setApplicationName("BrownBnB")
 					.build();
 
 		} catch (IOException e) {
-			System.err.println("Error creating Drive service: " + e.getMessage());
-			return null;
+			throw new RuntimeException("Error creating Drive service: " + e.getMessage(), e);
 		}
 	}
 
@@ -322,10 +298,9 @@ public class FirebasePostDataSource implements PostsDataSource {
 			return "image/jpeg";
 		} else if (fileName.endsWith(".png")) {
 			return "image/png";
-		} else if(fileName.endsWith("jpg")){
+		} else if (fileName.endsWith("jpg")) {
 			return "image/jpg";
-		}
-		else {
+		} else {
 			return "application/octet-stream";
 		}
 	}

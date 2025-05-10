@@ -1,13 +1,11 @@
 package org.example.Posts;
 
-import org.example.Posts.AbstractPost;
-import org.example.Posts.DiningPost;
-import org.example.Posts.DormPost;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
-
+import java.util.Arrays;
+import java.util.Collections;
 import java.io.File;
 
 public class MockPostsDataSource implements PostsDataSource {
@@ -31,23 +29,55 @@ public class MockPostsDataSource implements PostsDataSource {
 		if (post.getContent() != null) {
 			postValues.put("content", post.getContent());
 		}
-		if (type.equals("dining")) {
-			this.diningPosts.put(location, postValues);
-		} else if (type.equals("dorm")) {
-			this.dormPosts.put(location, postValues);
+		if (post.getImageURL() != null) {
+			postValues.put("imageURL", post.getImageURL());
 		}
+
+		switch (type) {
+			case "dining":
+				DiningPost diningPost = (DiningPost) post;
+				postValues.put("meals", diningPost.getMeals());
+				if (diningPosts.containsKey(location)) {
+					List<Object> existingPosts = (List<Object>) diningPosts.get(location);
+					existingPosts.add(postValues);
+				} else {
+					diningPosts.put(location, new ArrayList<>(Collections.singletonList(postValues)));
+				}
+				this.diningPosts.put(location, Arrays.asList(postValues));
+				break;
+			case "dorm":
+				if (dormPosts.containsKey(location)) {
+					List<Object> existingPosts = (List<Object>) dormPosts.get(location);
+					existingPosts.add(postValues);
+				} else {
+					dormPosts.put(location, new ArrayList<>(Collections.singletonList(postValues)));
+				}
+
+				break;
+			default:
+				throw new IllegalArgumentException("Invalid post type: " + type);
+		}
+
 	}
 
 	@Override
 	public void deletePost(String userID, String postID, String location, String type) {
 		Map<String, Object> posts = new HashMap<>();
+		List<AbstractPost> allPosts = getAllPosts();
 		if (type.equals("dining")) {
 			posts = diningPosts;
 		} else if (type.equals("dorm")) {
 			posts = dormPosts;
 		}
-		List<AbstractPost> postsForLocation = (List<AbstractPost>) posts.get(location);
-		postsForLocation.removeIf(post -> post.getUserID().equals(userID) && post.getPostID().equals(postID));
+		List<Map<String, Object>> postList = (List<Map<String, Object>>) posts.get(location);
+		for (Map<String, Object> postData : postList) {
+			if (postData.get("userID").equals(userID) && postData.get("postID").equals(postID)) {
+				postList.remove(postData);
+				break;
+			}
+		}
+		allPosts.removeIf(p -> p.getPostID().equals(postID) && p.getUserID().equals(userID)
+				&& p.getLocation().equals(location) && p.getType().equals(type));
 	}
 
 	@Override
@@ -59,29 +89,28 @@ public class MockPostsDataSource implements PostsDataSource {
 	}
 
 	public List<DormPost> getAllDormPost() {
-		
+
 		List<DormPost> dormList = new ArrayList<>();
 
 		for (Object obj : dormPosts.values()) {
-			Map<String, Object> postMap = (Map<String, Object>) obj;
+			for (Object postObj : (List<Object>) obj) {
+				Map<String, Object> postData = (Map<String, Object>) postObj;
+				String location = (String) postData.get("location");
+				String postID = (String) postData.get("postID");
+				String userID = (String) postData.get("userID");
+				String dateTime = (String) postData.get("dateTime");
+				String title = postData.get("title") != null ? (String) postData.get("title") : " ";
+				Integer rating = (Integer) postData.get("rating");
+				String content = postData.get("content") != null ? (String) postData.get("content") : " ";
+				String imageURL = postData.get("imageURL") != null ? (String) postData.get("imageURL") : " ";
 
-			String userID = (String) postMap.get("userID");
-			String postID = (String) postMap.get("postID");
-			String dateTime = (String) postMap.get("dateTime");
-			String location = (String) postMap.get("location");
-			Integer rating = (Integer) postMap.get("rating");
-			String title = (String) postMap.get("title");
-			String content = (String) postMap.get("content");
-			String imageURL = (String) postMap.get("imageURL");
-			if (imageURL == null) {
-				imageURL = " ";
+				DormPost post = new DormPost(userID, postID, dateTime, location, rating, title, content, imageURL);
+
+				dormList.add(post);
+
 			}
 
-			DormPost post = new DormPost(userID, postID, dateTime, location, rating, title, content, imageURL);
-
-			dormList.add(post);
 		}
-
 		return dormList;
 	}
 
@@ -89,25 +118,23 @@ public class MockPostsDataSource implements PostsDataSource {
 		List<DiningPost> diningList = new ArrayList<>();
 
 		for (Object obj : diningPosts.values()) {
-			Map<String, Object> postMap = (Map<String, Object>) obj;
+			for (Object postObj : (List<Object>) obj) {
+				Map<String, Object> postData = (Map<String, Object>) postObj;
+				String location = (String) postData.get("location");
+				String postID = (String) postData.get("postID");
+				String userID = (String) postData.get("userID");
+				String dateTime = (String) postData.get("dateTime");
+				String title = postData.get("title") != null ? (String) postData.get("title") : " ";
+				Integer rating = (Integer) postData.get("rating");
+				String content = postData.get("content") != null ? (String) postData.get("content") : " ";
+				String imageURL = postData.get("imageURL") != null ? (String) postData.get("imageURL") : " ";
+				String meals = postData.get("meals") != null ? (String) postData.get("meals") : " ";
 
-			String userID = (String) postMap.get("userID");
-			String postID = (String) postMap.get("postID");
-			String dateTime = (String) postMap.get("dateTime");
-			String location = (String) postMap.get("location");
-			Integer rating = (Integer) postMap.get("rating");
-			String title = (String) postMap.get("title");
-			String content = (String) postMap.get("content");
-			String meals = (String) postMap.get("meals");
-			String imageURL = (String) postMap.get("imageURL");
-			if (imageURL == null) {
-				imageURL = " ";
+				DiningPost post = new DiningPost(userID, postID, title, location, meals, rating, content, dateTime,
+						imageURL);
+
+				diningList.add(post);
 			}
-
-			DiningPost post = new DiningPost(userID, postID, title, location, meals, rating, content, dateTime, imageURL);
-
-			diningList.add(post);
-
 		}
 
 		return diningList;
@@ -139,8 +166,10 @@ public class MockPostsDataSource implements PostsDataSource {
 
 	@Override
 	public String uploadImage(File file) {
-		// Mock implementation, return a dummy URL
-		return "http://example.com/image.jpg";
+		if (file == null) {
+			return null;
+		}
+		return "https://mock-drive.example.com/" + file.getName();
 	}
 
 }

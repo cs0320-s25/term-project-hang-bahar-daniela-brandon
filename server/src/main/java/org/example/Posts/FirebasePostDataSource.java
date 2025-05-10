@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 
+import org.example.Dorms.AccessibilityFetcher;
+
 public class FirebasePostDataSource implements PostsDataSource {
 	// Firebase Firestore references
 	private final Firestore firestore;
@@ -82,7 +84,8 @@ public class FirebasePostDataSource implements PostsDataSource {
 
 		try {
 			// Determine which collection to use based on post type
-			DocumentReference locationDocRef = postType.equals("dorm") ? dormPostsRef.document(location)
+			DocumentReference locationDocRef = postType.equals("dorm")
+					? dormPostsRef.document(normalizeLocation(location))
 					: diningPostsRef.document(location);
 			DocumentSnapshot document = locationDocRef.get().get();
 
@@ -130,12 +133,14 @@ public class FirebasePostDataSource implements PostsDataSource {
 			List<AbstractPost> allPosts = getAllPosts();
 			if ("dorm".equals(type)) {
 				collectionRef = dormPostsRef;
+				location = normalizeLocation(location);
 			} else if ("dining".equals(type)) {
 				collectionRef = diningPostsRef;
 			} else {
 				throw new IllegalArgumentException("Unknown post type: " + type);
 			}
 
+			final String finalLocation = location;
 			DocumentReference docRef = collectionRef.document(location);
 
 			firestore.runTransaction(transaction -> {
@@ -144,14 +149,14 @@ public class FirebasePostDataSource implements PostsDataSource {
 				List<Map<String, Object>> posts = (List<Map<String, Object>>) snapshot.get("posts");
 
 				if (posts == null || posts.isEmpty()) {
-					throw new NoSuchElementException("No posts found for location: " + location);
+					throw new NoSuchElementException("No posts found for location: " + finalLocation);
 				}
 
 				for (Map<String, Object> post : posts) {
 					if (userID.equals(post.get("userID")) && postID.equals(post.get("postID"))) {
 						transaction.update(docRef, "posts", FieldValue.arrayRemove(post));
 						allPosts.removeIf(p -> p.getPostID().equals(postID) && p.getUserID().equals(userID)
-								&& p.getLocation().equals(location) && p.getType().equals(type));
+								&& p.getLocation().equals(finalLocation) && p.getType().equals(type));
 						break;
 					}
 				}
@@ -179,7 +184,11 @@ public class FirebasePostDataSource implements PostsDataSource {
 		List<Integer> ratings = new ArrayList<>();
 
 		for (AbstractPost post : allPosts) {
-			if (post.getLocation().toLowerCase().contains(location.toLowerCase())) {
+			String postType = post.getType();
+			if (postType.equals("dorm")) {
+				location = normalizeLocation(location);
+			}
+			if (post.getLocation().contains(location)) {
 				ratings.add(post.getRating());
 			}
 		}
@@ -194,7 +203,7 @@ public class FirebasePostDataSource implements PostsDataSource {
 			QuerySnapshot querySnapshot = dormPostsRef.get().get();
 
 			for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-				String dormLocation = document.getId();
+				String dormLocation = getLocationFromNormalized(document.getId());
 				List<Map<String, Object>> postsList = (List<Map<String, Object>>) document.get("posts");
 
 				if (postsList != null) {
@@ -270,6 +279,26 @@ public class FirebasePostDataSource implements PostsDataSource {
 			sum += rating;
 		}
 		return sum / ratings.size();
+	}
+
+	private Map<String, String> getLocationMapping() {
+		Map<String, String> mapping = AccessibilityFetcher.getNameMapping();
+		return mapping;
+	}
+
+	private String normalizeLocation(String location) {
+		final Map<String, String> nameMapping = getLocationMapping();
+		return nameMapping.get(location);
+	}
+
+	private String getLocationFromNormalized(String normalizedLocation) {
+		final Map<String, String> nameMapping = getLocationMapping();
+		for (Map.Entry<String, String> entry : nameMapping.entrySet()) {
+			if (entry.getValue().equals(normalizedLocation)) {
+				return entry.getKey();
+			}
+		}
+		return null;
 	}
 
 	private Drive createDriveService() {

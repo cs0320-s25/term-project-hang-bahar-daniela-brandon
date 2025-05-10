@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 
+import org.example.Dorms.AccessibilityFetcher;
+
 public class FirebasePostDataSource implements PostsDataSource {
 	// Firebase Firestore references
 	private final Firestore firestore;
@@ -82,7 +84,8 @@ public class FirebasePostDataSource implements PostsDataSource {
 
 		try {
 			// Determine which collection to use based on post type
-			DocumentReference locationDocRef = postType.equals("dorm") ? dormPostsRef.document(normalizeLocation(location))
+			DocumentReference locationDocRef = postType.equals("dorm")
+					? dormPostsRef.document(normalizeLocation(location))
 					: diningPostsRef.document(location);
 			DocumentSnapshot document = locationDocRef.get().get();
 
@@ -182,7 +185,7 @@ public class FirebasePostDataSource implements PostsDataSource {
 
 		for (AbstractPost post : allPosts) {
 			String postType = post.getType();
-			if (postType.equals("dorm")){
+			if (postType.equals("dorm")) {
 				location = normalizeLocation(location);
 			}
 			if (post.getLocation().contains(location)) {
@@ -279,38 +282,8 @@ public class FirebasePostDataSource implements PostsDataSource {
 	}
 
 	private Map<String, String> getLocationMapping() {
-		return Map.ofEntries(
-			Map.entry("Buxton House: Wriston Quad", "buxtonhouse"),
-			Map.entry("Hope College", "hopecollege"),
-			Map.entry("Barbour Hall", "barbourhall"),
-			Map.entry("Diman House: Wriston Quad", "dimanhouse"),
-			Map.entry("Young Orchard Ave 002", "youngorchard2"),
-			Map.entry("Chapin House: Wriston Quad", "chapinhouse"),
-			Map.entry("Sears House: Wriston Quad", "searshouse"),
-			Map.entry("Chen Family Hall", "chenfamilyhall"),
-			Map.entry("Hegeman Hall", "hegemanhall"),
-			Map.entry("Sternlicht Commons", "sternlichtcommons"),
-			Map.entry("Graduate Center A", "gradcentera"),
-			Map.entry("Harkness House: Wriston Quad", "harknesshouse"),
-			Map.entry("Graduate Center B", "gradcenterb"),
-			Map.entry("Slater Hall", "slaterhall"),
-			Map.entry("Graduate Center C", "gradcenterc"),
-			Map.entry("Graduate Center D", "gradcenterd"),
-			Map.entry("Wayland House: Wriston Quad", "waylandhouse"),
-			Map.entry("Marcy House: Wriston Quad", "marcyhouse"),
-			Map.entry("Vartan Gregorian Quad A", "gregorianquada"),
-			Map.entry("Vartan Gregorian Quad B", "gregorianquadb"),
-			Map.entry("Minden Hall", "mindenhall"),
-			Map.entry("Goddard House: Wriston Quad", "goddardhouse"),
-			Map.entry("Olney House: Wriston Quad", "olneyhouse"),
-			Map.entry("Caswell Hall", "caswellhall"),
-			Map.entry("Young Orchard Ave 004", "youngorchard4"),
-			Map.entry("Littlefield Hall", "littlefieldhall"),
-			Map.entry("Young Orchard Ave 010", "youngorchard10"),
-			Map.entry("William and Ami Danoff Hall", "danoffhall"),
-			Map.entry("Machado (Antonio) House", "machadohouse"),
-			Map.entry("King House", "kinghouse"),
-			Map.entry("Perkins Hall", "perkinshall"));
+		Map<String, String> mapping = AccessibilityFetcher.getNameMapping();
+		return mapping;
 	}
 
 	private String normalizeLocation(String location) {

@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import org.apache.commons.text.similarity.LevenshteinDistance;
+import org.tartarus.snowball.ext.englishStemmer;
 
 public class FirebaseDormDatasource implements DormDataSource {
 
@@ -289,28 +290,39 @@ public class FirebaseDormDatasource implements DormDataSource {
     return results.subList(0, Math.min(3, results.size()));
   }
 
+  /**
+   * Stem a word to root form to match semantically related words
+   */
+  englishStemmer stemmer = new englishStemmer();
+  String stem(String word) {
+    stemmer.setCurrent(word.toLowerCase());
+    stemmer.stem();
+    return stemmer.getCurrent();
+  }
   private int calculateDormScore(Dorm dorm, String query) {
     LevenshteinDistance ld = new LevenshteinDistance(Integer.MAX_VALUE);
-    String normalizedQuery = query.toLowerCase();
+    String stemmedQuery = stem(query.toLowerCase());
     int score = 0;
 
     // Check dorm name (allow typo)
-    if (dorm.getName().equals(normalizedQuery)) {
+    String stemmedDorm = stem(dorm.getName().toLowerCase());
+    if (stemmedDorm.equals(stemmedQuery)) {
       score += 10;
-    } else if (dorm.getName().contains(normalizedQuery)) {
+    } else if (stemmedDorm.contains(stemmedQuery)) {
       score += 7;
     } else {
-      int distance = ld.apply(dorm.getName(), normalizedQuery);
+      int distance = ld.apply(stemmedDorm, stemmedQuery);
       if (distance <= 2) {
         score += 5;
       }
     }
     // Check room types
     for (String roomType : dorm.getRoomTypes()) {
-      if (roomType.toLowerCase().contains(normalizedQuery)) {
+      String stemmedRoomType = stem(roomType.toLowerCase());
+      if (stemmedRoomType.contains(stemmedQuery)) {
         score += 5;
       } else {
-        int distance = ld.apply(roomType.toLowerCase(), normalizedQuery);
+        int distance = ld.apply(stemmedRoomType, stemmedQuery);
         if (distance <= 2) {
           score += 3;
         }
@@ -318,10 +330,11 @@ public class FirebaseDormDatasource implements DormDataSource {
     }
     // Check communities
     for (String community : dorm.getCommunities()) {
-      if (community.toLowerCase().contains(normalizedQuery)) {
+      String stemmedCommunity = stem(community.toLowerCase());
+      if (stemmedCommunity.contains(stemmedQuery)) {
         score += 6;
       } else {
-        int distance = ld.apply(community.toLowerCase(), normalizedQuery);
+        int distance = ld.apply(stemmedCommunity, stemmedQuery);
         if (distance <= 2) {
           score += 4;
         }
@@ -329,10 +342,11 @@ public class FirebaseDormDatasource implements DormDataSource {
     }
     // Check proximity
     for (String location : dorm.getProximity()) {
-      if (location.toLowerCase().contains(normalizedQuery)) {
+      String stemmedLocation = stem(location.toLowerCase());
+      if (stemmedLocation.contains(stemmedQuery)) {
         score += 3;
       } else {
-        int distance = ld.apply(location.toLowerCase(), normalizedQuery);
+        int distance = ld.apply(stemmedLocation, stemmedQuery);
         if (distance <= 2) {
           score += 2;
         }

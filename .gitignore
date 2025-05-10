@@ -21,4 +21,5 @@ playwright/.cache/
 # mac
 .DS_Store
 
-server/src/main/resources/firebase_config.json
+#server
+resources/

@@ -2,6 +2,9 @@ package org.example.Posts;
 
 import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+
 import com.google.cloud.firestore.*;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -9,22 +12,36 @@ import com.google.firebase.cloud.FirestoreClient;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
+import java.io.File;
+
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.DriveScopes;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.HttpTransport;
+
 import java.util.*;
 import java.util.concurrent.*;
 import com.google.api.core.ApiFuture;
+import com.google.api.client.http.FileContent;
 
 public class FirebasePostDataSource implements PostsDataSource {
 	// Firebase Firestore references
 	private final Firestore firestore;
 	private final CollectionReference dormPostsRef;
 	private final CollectionReference diningPostsRef;
+	private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
+	private final String SERVICE_ACCOUNT_KEY_PATH;
 
 	public FirebasePostDataSource() throws IOException {
 		String workingDirectory = System.getProperty("user.dir");
 		Path firebaseConfigPath = Paths.get(workingDirectory, "src", "main", "resources", "firebase_config.json");
+		Path googleCredentialsPath = Paths.get(workingDirectory, "src", "main", "resources", "google_config.json");
+		this.SERVICE_ACCOUNT_KEY_PATH = googleCredentialsPath.toString();
 		FileInputStream serviceAccount = new FileInputStream(firebaseConfigPath.toFile());
 
 		FirebaseOptions options = FirebaseOptions.builder()
@@ -64,6 +81,11 @@ public class FirebasePostDataSource implements PostsDataSource {
 			postValues.put("meals", diningPost.getMeals());
 		}
 
+		if (post.getImageURL() != null) {
+			postValues.put("imageURL", post.getImageURL());
+
+		}
+
 		try {
 			// Determine which collection to use based on post type
 			DocumentReference locationDocRef = postType.equals("dorm") ? dormPostsRef.document(location)
@@ -82,6 +104,30 @@ public class FirebasePostDataSource implements PostsDataSource {
 		} catch (Exception e) {
 			System.err.println("Error adding post: " + e.getMessage());
 		}
+	}
+
+	@Override
+	public String uploadImage(File file) {
+		try {
+
+			String folderID = "1OGme3Hy5p4qeqBZyKAE6YSL9wIqNbDgc";
+			Drive drive = createDriveService();
+			com.google.api.services.drive.model.File fileMetadata = new com.google.api.services.drive.model.File();
+			fileMetadata.setName(file.getName());
+			fileMetadata.setParents(Collections.singletonList(folderID));
+			String mimeType = getMimeType(file);
+			FileContent content = new FileContent(mimeType, file);
+			com.google.api.services.drive.model.File uploadedFile = drive.files().create(fileMetadata, content)
+					.setFields("id")
+					.execute();
+			String imageURL = "https://drive.google.com/uc?id=" + uploadedFile.getId();
+			file.delete();
+			return imageURL;
+		} catch (Exception e) {
+			System.err.println("Error uploading image: " + e.getMessage());
+		}
+
+		return null;
 	}
 
 	@Override
@@ -193,8 +239,9 @@ public class FirebasePostDataSource implements PostsDataSource {
 		String title = postData.get("title") != null ? (String) postData.get("title") : " ";
 		Integer rating = ((Long) postData.get("rating")).intValue();
 		String content = postData.get("content") != null ? (String) postData.get("content") : " ";
+		String imageURL = postData.get("imageURL") != null ? (String) postData.get("imageURL") : " ";
 
-		return new DormPost(userID, postID, title, dormLocation, rating, content, postDate);
+		return new DormPost(userID, postID, title, dormLocation, rating, content, postDate, imageURL);
 	}
 
 	public List<DiningPost> getAllDiningPost() {
@@ -231,8 +278,9 @@ public class FirebasePostDataSource implements PostsDataSource {
 		Integer rating = postData.get("rating") != null ? ((Long) postData.get("rating")).intValue() : 0;
 		String content = postData.get("content") != null ? (String) postData.get("content") : " ";
 		String meals = postData.get("meals") != null ? (String) postData.get("meals") : " ";
+		String imageURL = postData.get("imageURL") != null ? (String) postData.get("imageURL") : " ";
 
-		return new DiningPost(userID, postID, title, diningLocation, meals, rating, content, postDate);
+		return new DiningPost(userID, postID, title, diningLocation, meals, rating, content, postDate, imageURL);
 	}
 
 	private Integer calculateAverage(List<Integer> ratings) {
@@ -244,6 +292,42 @@ public class FirebasePostDataSource implements PostsDataSource {
 			sum += rating;
 		}
 		return sum / ratings.size();
+	}
+
+	private Drive createDriveService() {
+		try {
+			GoogleCredential credential = GoogleCredential.fromStream(new FileInputStream(SERVICE_ACCOUNT_KEY_PATH))
+					.createScoped(Collections.singleton(DriveScopes.DRIVE));
+
+			HttpTransport httpTransport = null;
+			try {
+				httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+			} catch (java.security.GeneralSecurityException e) {
+				System.err.println("Error creating Drive service: " + e.getMessage());
+				return null;
+			}
+			return new Drive.Builder(httpTransport, JSON_FACTORY, credential)
+					.setApplicationName("BrownBnB")
+					.build();
+
+		} catch (IOException e) {
+			System.err.println("Error creating Drive service: " + e.getMessage());
+			return null;
+		}
+	}
+
+	private String getMimeType(File file) {
+		String fileName = file.getName().toLowerCase();
+		if (fileName.endsWith(".jpeg") || fileName.endsWith(".jpg")) {
+			return "image/jpeg";
+		} else if (fileName.endsWith(".png")) {
+			return "image/png";
+		} else if(fileName.endsWith("jpg")){
+			return "image/jpg";
+		}
+		else {
+			return "application/octet-stream";
+		}
 	}
 
 }

@@ -12,9 +12,10 @@ public abstract class AbstractPost {
 	protected String location;
 	protected String userID;
 	protected String postID;
+	protected String imageURL;
 
 	public AbstractPost(String userID, String postID, String type, String title, String location, Integer rating,
-			String content, String dateTime) {
+			String content, String dateTime, String imageURL) {
 		this.userID = userID;
 		this.postID = postID;
 		this.type = type;
@@ -23,6 +24,7 @@ public abstract class AbstractPost {
 		this.rating = rating;
 		this.content = content;
 		this.dateTime = dateTime;
+		this.imageURL  = imageURL;
 	}
 
 	public String getTitle() {
@@ -55,6 +57,10 @@ public abstract class AbstractPost {
 
 	public String getPostID() {
 		return postID;
+	}
+
+	public String getImageURL() {
+		return imageURL;
 	}
 
 }

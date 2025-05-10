@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 import java.util.List;
 import java.util.ArrayList;
 
+import java.io.File;
+
 public class MockPostsDataSource implements PostsDataSource {
 	Map<String, Object> diningPosts = new HashMap<>();
 	Map<String, Object> dormPosts = new HashMap<>();
@@ -71,8 +73,12 @@ public class MockPostsDataSource implements PostsDataSource {
 			Integer rating = (Integer) postMap.get("rating");
 			String title = (String) postMap.get("title");
 			String content = (String) postMap.get("content");
+			String imageURL = (String) postMap.get("imageURL");
+			if (imageURL == null) {
+				imageURL = " ";
+			}
 
-			DormPost post = new DormPost(userID, postID, dateTime, location, rating, title, content);
+			DormPost post = new DormPost(userID, postID, dateTime, location, rating, title, content, imageURL);
 
 			dormList.add(post);
 		}
@@ -94,8 +100,12 @@ public class MockPostsDataSource implements PostsDataSource {
 			String title = (String) postMap.get("title");
 			String content = (String) postMap.get("content");
 			String meals = (String) postMap.get("meals");
+			String imageURL = (String) postMap.get("imageURL");
+			if (imageURL == null) {
+				imageURL = " ";
+			}
 
-			DiningPost post = new DiningPost(userID, postID, title, location, meals, rating, content, dateTime);
+			DiningPost post = new DiningPost(userID, postID, title, location, meals, rating, content, dateTime, imageURL);
 
 			diningList.add(post);
 
@@ -126,6 +136,12 @@ public class MockPostsDataSource implements PostsDataSource {
 			sum += rating;
 		}
 		return sum / ratings.size();
+	}
+
+	@Override
+	public String uploadImage(File file) {
+		// Mock implementation, return a dummy URL
+		return "http://example.com/image.jpg";
 	}
 
 }

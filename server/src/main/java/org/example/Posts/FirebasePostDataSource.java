@@ -81,7 +81,7 @@ public class FirebasePostDataSource implements PostsDataSource {
 		postValues.put("postID", postID);
 		postValues.put("dateTime", post.getDateTime().toString());
 		postValues.put("location", post.getLocation());
-		postValues.put("rating", post.getRating());
+
 		postValues.put("type", postType);
 
 		if (post.getTitle() != null) {
@@ -94,6 +94,9 @@ public class FirebasePostDataSource implements PostsDataSource {
 		if (postType.equals("dining")) {
 			DiningPost diningPost = (DiningPost) post;
 			postValues.put("meals", diningPost.getMeals());
+		}
+		if (post.getRating() != null) {
+			postValues.put("rating", post.getRating());
 		}
 
 		if (post.getImageURL() != null) {
@@ -253,7 +256,7 @@ public class FirebasePostDataSource implements PostsDataSource {
 
 		try {
 			var documents = dormPostsRef.get().get().getDocuments();
-			for(var doc : documents){
+			for (var doc : documents) {
 				String dormLocation = getLocationFromNormalized(doc.getId());
 				List<Map<String, Object>> postsList = (List<Map<String, Object>>) doc.get("posts");
 

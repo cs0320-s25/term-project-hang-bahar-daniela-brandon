@@ -60,7 +60,7 @@ public class FirebasePostDataSource implements PostsDataSource {
 		}
 
 		this.firestore = FirestoreClient.getFirestore();
-		this.dormPostsRef = firestore.collection("dorm_posts");
+		this.dormPostsRef = firestore.collection("dorms");
 		this.diningPostsRef = firestore.collection("dining_posts");
 	}
 

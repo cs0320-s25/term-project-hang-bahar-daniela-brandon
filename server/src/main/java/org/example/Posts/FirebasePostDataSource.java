@@ -25,6 +25,17 @@ import java.util.concurrent.*;
 
 import org.example.Dorms.AccessibilityFetcher;
 
+/**
+ * FirebasePostDataSource is a class that implements the PostsDataSource
+ * interface
+ * to interact with Firebase Firestore for managing posts related to dorms and
+ * dining.
+ * It provides methods to add, delete, and retrieve posts, as well as upload
+ * images to Google Drive.
+ * It also includes helper methods for location normalization and average rating
+ * calculation.
+ * 
+ */
 public class FirebasePostDataSource implements PostsDataSource {
 	// Firebase Firestore references
 	private final Firestore firestore;
@@ -53,6 +64,13 @@ public class FirebasePostDataSource implements PostsDataSource {
 		this.diningPostsRef = firestore.collection("dining_posts");
 	}
 
+	/**
+	 * Adds a post to the appropriate collection in Firestore based on its type
+	 * (dorm or dining).
+	 * The post is stored as a map with relevant details.
+	 *
+	 * @param post The post to be added.
+	 */
 	public void addPost(AbstractPost post) {
 		Map<String, Object> postValues = new HashMap<>();
 		String postType = post.getType();
@@ -104,6 +122,13 @@ public class FirebasePostDataSource implements PostsDataSource {
 		}
 	}
 
+	/**
+	 * Uploads an image file to Google Drive and returns the public URL of the
+	 * uploaded image.
+	 *
+	 * @param file The image file to be uploaded.
+	 * @return The public URL of the uploaded image.
+	 */
 	@Override
 	public String uploadImage(File file) {
 		try {
@@ -127,6 +152,16 @@ public class FirebasePostDataSource implements PostsDataSource {
 		}
 	}
 
+	/**
+	 * Deletes a post from the appropriate collection in Firestore based on its
+	 * type (dorm or dining).
+	 * The post is identified by its userID, postID, location, and type.
+	 *
+	 * @param userID   The ID of the user who created the post.
+	 * @param postID   The ID of the post to be deleted.
+	 * @param location The location associated with the post.
+	 * @param type     The type of the post (dorm or dining).
+	 */
 	@Override
 	public void deletePost(String userID, String postID, String location, String type) {
 		try {
@@ -171,6 +206,11 @@ public class FirebasePostDataSource implements PostsDataSource {
 
 	}
 
+	/**
+	 * Retrieves all posts from both dorm and dining collections in Firestore.
+	 *
+	 * @return A list of all posts.
+	 */
 	@Override
 	public List<AbstractPost> getAllPosts() {
 		List<AbstractPost> allPosts = new ArrayList<>();
@@ -179,53 +219,64 @@ public class FirebasePostDataSource implements PostsDataSource {
 		return allPosts;
 	}
 
+	/**
+	 * Retrieves the average rating of posts for a given location.
+	 *
+	 * @param location The location for which to calculate the average rating.
+	 * @return The average rating for the specified location.
+	 */
 	@Override
 	public Integer getAverageRatingsByLocation(String location) {
 		List<AbstractPost> allPosts = getAllPosts();
 		List<Integer> ratings = new ArrayList<>();
 
 		for (AbstractPost post : allPosts) {
-			String postType = post.getType();
-			if (postType.equals("dorm")) {
-				location = normalizeLocation(location);
-			}
-			if (post.getLocation().contains(location)) {
-				if(post.getRating()!=null){
+			if (post.getLocation().toLowerCase().contains(location.toLowerCase())) {
+				if (post.getRating() != null) {
 					ratings.add(post.getRating());
 
 				}
-				
+
 			}
 		}
 		return calculateAverage(ratings);
 	}
 
 	// HELPER FUNCTIONS
+	/**
+	 * Retrieves all dorm posts from Firestore.
+	 *
+	 * @return A list of all dorm posts.
+	 */
 	List<DormPost> getAllDormPost() {
 		List<DormPost> posts = new ArrayList<>();
 
 		try {
-			QuerySnapshot querySnapshot = dormPostsRef.get().get();
-
-			for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-				String dormLocation = getLocationFromNormalized(document.getId());
-				List<Map<String, Object>> postsList = (List<Map<String, Object>>) document.get("posts");
+			var documents = dormPostsRef.get().get().getDocuments();
+			for(var doc : documents){
+				String dormLocation = getLocationFromNormalized(doc.getId());
+				List<Map<String, Object>> postsList = (List<Map<String, Object>>) doc.get("posts");
 
 				if (postsList != null) {
 					for (Map<String, Object> postData : postsList) {
-						// Create DormPost from the map data with proper null handling
 						DormPost post = createDormPostFromMap(postData, dormLocation);
 						posts.add(post);
 					}
 				}
 			}
-
 			return posts;
 		} catch (Exception e) {
 			throw new RuntimeException("Error fetching dorm posts: " + e.getMessage(), e);
 		}
 	}
 
+	/**
+	 * Creates a DormPost object from a map of post data.
+	 *
+	 * @param postData     The map containing post data.
+	 * @param dormLocation The location of the dorm.
+	 * @return A DormPost object created from the map data.
+	 */
 	private DormPost createDormPostFromMap(Map<String, Object> postData, String dormLocation) {
 		String postID = (String) postData.get("postID");
 		String userID = (String) postData.get("userID");
@@ -238,15 +289,20 @@ public class FirebasePostDataSource implements PostsDataSource {
 		return new DormPost(userID, postID, title, dormLocation, rating, content, postDate, imageURL);
 	}
 
+	/**
+	 * Retrieves all dining posts from Firestore.
+	 *
+	 * @return A list of all dining posts.
+	 */
 	public List<DiningPost> getAllDiningPost() {
 		List<DiningPost> posts = new ArrayList<>();
 
 		try {
-			QuerySnapshot querySnapshot = diningPostsRef.get().get();
+			var documents = diningPostsRef.get().get().getDocuments();
 
-			for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-				String diningLocation = document.getId();
-				List<Map<String, Object>> postsList = (List<Map<String, Object>>) document.get("posts");
+			for (var doc : documents) {
+				String diningLocation = doc.getId();
+				List<Map<String, Object>> postsList = (List<Map<String, Object>>) doc.get("posts");
 
 				if (postsList != null) {
 					for (Map<String, Object> postData : postsList) {
@@ -262,12 +318,19 @@ public class FirebasePostDataSource implements PostsDataSource {
 		}
 	}
 
+	/**
+	 * Creates a DiningPost object from a map of post data.
+	 *
+	 * @param postData       The map containing post data.
+	 * @param diningLocation The location of the dining.
+	 * @return A DiningPost object created from the map data.
+	 */
 	private DiningPost createDiningPostFromMap(Map<String, Object> postData, String diningLocation) {
 		String postID = (String) postData.get("postID");
 		String userID = (String) postData.get("userID");
 		String postDate = (String) postData.get("dateTime");
 		String title = postData.get("title") != null ? (String) postData.get("title") : " ";
-		Integer rating = postData.get("rating") != null ? ((Long) postData.get("rating")).intValue(): null;
+		Integer rating = postData.get("rating") != null ? ((Long) postData.get("rating")).intValue() : null;
 		String content = postData.get("content") != null ? (String) postData.get("content") : " ";
 		String meals = postData.get("meals") != null ? (String) postData.get("meals") : " ";
 		String imageURL = postData.get("imageURL") != null ? (String) postData.get("imageURL") : " ";
@@ -275,6 +338,12 @@ public class FirebasePostDataSource implements PostsDataSource {
 		return new DiningPost(userID, postID, title, diningLocation, meals, rating, content, postDate, imageURL);
 	}
 
+	/**
+	 * Calculates the average rating from a list of ratings.
+	 *
+	 * @param ratings The list of ratings.
+	 * @return The average rating.
+	 */
 	private Integer calculateAverage(List<Integer> ratings) {
 		if (ratings.isEmpty()) {
 			return 0;
@@ -286,16 +355,33 @@ public class FirebasePostDataSource implements PostsDataSource {
 		return sum / ratings.size();
 	}
 
+	/**
+	 * Retrieves a mapping of location names to their normalized forms.
+	 *
+	 * @return A map containing location names and their normalized forms.
+	 */
 	private Map<String, String> getLocationMapping() {
 		Map<String, String> mapping = AccessibilityFetcher.getNameMapping();
 		return mapping;
 	}
 
+	/**
+	 * Normalizes a location name using a predefined mapping.
+	 *
+	 * @param location The location name to be normalized.
+	 * @return The normalized location name.
+	 */
 	private String normalizeLocation(String location) {
 		final Map<String, String> nameMapping = getLocationMapping();
 		return nameMapping.get(location);
 	}
 
+	/**
+	 * Retrieves the original location name from a normalized location name.
+	 *
+	 * @param normalizedLocation The normalized location name.
+	 * @return The original location name.
+	 */
 	private String getLocationFromNormalized(String normalizedLocation) {
 		final Map<String, String> nameMapping = getLocationMapping();
 		for (Map.Entry<String, String> entry : nameMapping.entrySet()) {
@@ -306,6 +392,11 @@ public class FirebasePostDataSource implements PostsDataSource {
 		return null;
 	}
 
+	/**
+	 * Creates a Google Drive service using the provided service account key.
+	 *
+	 * @return A Drive service instance.
+	 */
 	private Drive createDriveService() {
 		try {
 			GoogleCredential credential = GoogleCredential.fromStream(new FileInputStream(SERVICE_ACCOUNT_KEY_PATH))
@@ -326,6 +417,12 @@ public class FirebasePostDataSource implements PostsDataSource {
 		}
 	}
 
+	/**
+	 * Determines the MIME type of a file based on its extension.
+	 *
+	 * @param file The file for which to determine the MIME type.
+	 * @return The MIME type of the file.
+	 */
 	private String getMimeType(File file) {
 		String fileName = file.getName().toLowerCase();
 		if (fileName.endsWith(".jpeg") || fileName.endsWith(".jpg")) {

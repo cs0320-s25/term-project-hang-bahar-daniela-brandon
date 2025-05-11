@@ -2,6 +2,7 @@ package org.example.Dorms;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.CollectionReference;
+import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -32,7 +33,7 @@ public class FirebaseDormDatasource implements DormDataSource {
   public FirebaseDormDatasource() throws IOException {
     // Initialize Firebase connection
     String workingDirectory = System.getProperty("user.dir");
-    Path firebaseConfigPath = Paths.get(workingDirectory, "server", "src", "main", "resources",
+    Path firebaseConfigPath = Paths.get(workingDirectory, "src", "main", "resources",
         "firebase_config.json");
     FileInputStream serviceAccount = new FileInputStream(firebaseConfigPath.toFile());
 
@@ -64,7 +65,7 @@ public class FirebaseDormDatasource implements DormDataSource {
 
       // Parse room types CSV (keys are also standardized names)
       DormRoomTypesParser parser = new DormRoomTypesParser();
-      Map<String, Set<String>> roomTypes = parser.parseDormRoomTypes("/Users/brandonsun/Desktop/CS32/term-project-hang-bahar-daniela-brandon/dorm.csv");
+      Map<String, Set<String>> roomTypes = parser.parseDormRoomTypes("/Users/bahar/Desktop/cs320/term-project-hang-bahar-daniela-brandon/dorm.csv");
 
       // Upload data to Firebase
       uploadDormData(roomTypes, accessibilityMap, dormInfoMap);
@@ -177,8 +178,14 @@ public class FirebaseDormDatasource implements DormDataSource {
               }
             }
 
-            Dorm dorm = new Dorm(name, roomTypes, bathrooms, proximity, communities, accessibility, reviews);
+            // Get description and year built
+            String built = doc.getString("built");
+            String description = doc.getString("description");
+
+
+            Dorm dorm = new Dorm(name, roomTypes, bathrooms, proximity, communities, accessibility, reviews, built, description);
             loadedDorms.add(dorm);
+//            System.out.println(description);
             System.out.println("Successfully loaded dorm: " + name);
           } catch (Exception e) {
             System.err.println("Error parsing dorm document: " + e.getMessage());
@@ -266,7 +273,18 @@ public class FirebaseDormDatasource implements DormDataSource {
               }
             }
 
-            Dorm dorm = new Dorm(name, roomTypes, bathrooms, proximity, communities, accessibility, reviews);
+//            // Get description and year built
+//            String built = doc.getString("built");
+//            String description = doc.getString("description");
+//
+//            Dorm dorm = new Dorm(name, roomTypes, bathrooms, proximity, communities, accessibility, reviews,
+//                built != null ? built : "Unknown", description != null ? description : "No description available");
+
+            // Get description and year built
+            String built = doc.getString("built");
+            String description = doc.getString("description");
+
+            Dorm dorm = new Dorm(name, roomTypes, bathrooms, proximity, communities, accessibility, reviews, built, description);
             result.add(dorm);
           } catch (Exception e) {
             System.err.println("Error parsing dorm: " + e.getMessage());
@@ -383,6 +401,36 @@ public class FirebaseDormDatasource implements DormDataSource {
     results.sort((a, b) -> Integer.compare(b.getScore(), a.getScore()));
     return results.subList(0, Math.min(3, results.size()));
   }
+
+  @Override
+  public List<DormSearchResult> getInfo(JsonObject info) {
+    return new ArrayList<>();
+  }
+
+
+//  @Override
+//  public List<DormSearchResult> getInfo(JsonObject info) {
+//    List<DormSearchResult> results = new ArrayList<>();
+//
+//    for (Dorm dorm : getAllDorms()) {
+//      String dormName = dorm.getName();
+//      DormSearchResult result = new DormSearchResult();
+//      result.setDormName(dormName);
+//
+//      // Pull extra info from the map if available
+//      if (dormInfoMap.containsKey(dormName)) {
+//        result.setDescription(dormInfoMap.get(dormName).get("description"));
+//        result.setDateBuilt(dormInfoMap.get(dormName).get("built"));
+//      } else {
+//        result.setDescription("No description");
+//        result.setDateBuilt("Unknown");
+//      }
+//
+//      results.add(result);
+//    }
+//
+//    return results;
+//  }
 
 
   private int calculateMatchScoreFromPreferences(Dorm dorm, JsonObject preferences) {

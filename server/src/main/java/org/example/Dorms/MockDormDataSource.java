@@ -26,7 +26,9 @@ public class MockDormDataSource implements DormDataSource {
             "this dorm is really good and clean and nice",
             "can be loud with parties",
             "highly recommend"
-        )
+        ),
+        "1999",
+        "ddddd"
     ));
 
     // Hegeman dorm
@@ -40,7 +42,9 @@ public class MockDormDataSource implements DormDataSource {
         Arrays.asList(
             "quiet housing",
             "loud thayer"
-        )
+        ),
+        "1999",
+        "ddddd"
     ));
 
     // Young Orchard dorm
@@ -53,7 +57,9 @@ public class MockDormDataSource implements DormDataSource {
         1,
         Arrays.asList(
             "so far away from everything, but suites come with kitchens and private bathroom"
-        )
+        ),
+        "1999",
+        "ddddd"
     ));
   }
 
@@ -93,6 +99,11 @@ public class MockDormDataSource implements DormDataSource {
 
     results.sort((a, b) -> Integer.compare(b.getScore(), a.getScore()));
     return results;
+  }
+
+  @Override
+  public List<DormSearchResult> getInfo(JsonObject info) {
+    return List.of();
   }
 
   private int calculateMatchScoreFromPreferences(Dorm dorm, JsonObject preferences) {

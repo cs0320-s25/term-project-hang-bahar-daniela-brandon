@@ -9,4 +9,5 @@ public interface DormDataSource {
   //function that searches through the dorms with a given query
   List<DormSearchResult> searchDorms(String query);
   List<DormSearchResult> matchDorms(JsonObject preferences);
+  List<DormSearchResult> getInfo(JsonObject info);
 }

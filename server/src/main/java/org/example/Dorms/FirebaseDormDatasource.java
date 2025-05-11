@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import org.apache.commons.text.similarity.LevenshteinDistance;
+import org.example.DormInfoFetcher;
 import org.tartarus.snowball.ext.englishStemmer;
 
 public class FirebaseDormDatasource implements DormDataSource {

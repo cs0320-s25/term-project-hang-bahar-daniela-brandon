@@ -100,7 +100,7 @@ public class Server {
 			// DormRoomTypesParser().parseDormRoomTypes(
 			// "/Users/hangnguyen/Desktop/Academics/CS320/term-project-hang-bahar-daniela-brandon/dorm.csv");
 			Map<String, Set<String>> dorm_room_types = new DormRoomTypesParser().parseDormRoomTypes(
-					"/Users/bahar/Desktop/dorm.csv");
+					"/Users/danielaponce/Documents/GitHub/CSCI0320/term-project-hang-bahar-daniela-brandon/dorm.csv");
 			Map<String, Integer> accessibilityMap = AccessibilityFetcher.fetchAccessibility();
 
 			// System.out.println("printing dorm accessibility");
@@ -117,14 +117,14 @@ public class Server {
 		}
 	}
 
-   /**
-    * Runs Server.
-    *
-    * @param args none
-    */
-   public static void main(String[] args) throws IOException {
-       FirebaseDormDatasource firebaseDormDatasource = new FirebaseDormDatasource();
-       setUpServer();
-       printDormRoomTypes();
-   }
+	/**
+	 * Runs Server.
+	 *
+	 * @param args none
+	 */
+	public static void main(String[] args) throws IOException {
+		FirebaseDormDatasource firebaseDormDatasource = new FirebaseDormDatasource();
+		setUpServer();
+		printDormRoomTypes();
+	}
 }

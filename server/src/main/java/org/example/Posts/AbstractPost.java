@@ -24,38 +24,34 @@ public abstract class AbstractPost {
 		this.imageURL = imageURL;
 	}
 
+	// public void setPostID(String postID) {
+	// 	this.postID = postID;
+	// }
+
 	public String getTitle() {
 		return title;
 	}
-
 	public String getType() {
 		return type;
 	}
-
 	public String getLocation() {
 		return location;
 	}
-
 	public Integer getRating() {
 		return rating;
 	}
-
 	public String getContent() {
 		return content;
 	}
-
 	public String getDateTime() {
 		return dateTime;
 	}
-
 	public String getUserID() {
 		return userID;
 	}
-
 	public String getPostID() {
 		return postID;
 	}
-
 	public String getImageURL() {
 		return imageURL;
 	}

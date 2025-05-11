@@ -32,10 +32,6 @@ public class AddPostHandler implements spark.Route {
 				res.status(400);
 				return "Missing post type: must be 'dining' or 'dorm'";
 			}
-			if (body.get("postID") == null) {
-				res.status(400);
-				return "Missing postID";
-			}
 			if (body.get("userID") == null) {
 				res.status(400);
 				return "Missing userID";
@@ -44,11 +40,7 @@ public class AddPostHandler implements spark.Route {
 				res.status(400);
 				return "Missing location";
 			}
-			if (body.get("rating") == null) {
-				res.status(400);
-				return "Missing rating";
-			}
-
+		
 			AbstractPost post;
 			String type = body.get("type").getAsString();
 

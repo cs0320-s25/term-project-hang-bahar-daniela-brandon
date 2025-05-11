@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import org.apache.commons.text.similarity.LevenshteinDistance;
-import org.example.DormInfoFetcher;
 import org.tartarus.snowball.ext.englishStemmer;
 
 public class FirebaseDormDatasource implements DormDataSource {
@@ -65,7 +64,7 @@ public class FirebaseDormDatasource implements DormDataSource {
 
       // Parse room types CSV (keys are also standardized names)
       DormRoomTypesParser parser = new DormRoomTypesParser();
-      Map<String, Set<String>> roomTypes = parser.parseDormRoomTypes("/Users/bahar/Desktop/cs320/term-project-hang-bahar-daniela-brandon/dorm.csv");
+      Map<String, Set<String>> roomTypes = parser.parseDormRoomTypes("/Users/danielaponce/Documents/GitHub/CSCI0320/term-project-hang-bahar-daniela-brandon/dorm.csv");
 
       // Upload data to Firebase
       uploadDormData(roomTypes, accessibilityMap, dormInfoMap);

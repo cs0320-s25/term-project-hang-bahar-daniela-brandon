@@ -57,9 +57,10 @@ public class FirebasePostDataSource implements PostsDataSource {
 		Map<String, Object> postValues = new HashMap<>();
 		String postType = post.getType();
 		String location = post.getLocation();
+		String postID = firestore.collection("ids").document().getId();
 
 		postValues.put("userID", post.getUserID());
-		postValues.put("postID", post.getPostID());
+		postValues.put("postID", postID);
 		postValues.put("dateTime", post.getDateTime().toString());
 		postValues.put("location", post.getLocation());
 		postValues.put("rating", post.getRating());
@@ -189,7 +190,11 @@ public class FirebasePostDataSource implements PostsDataSource {
 				location = normalizeLocation(location);
 			}
 			if (post.getLocation().contains(location)) {
-				ratings.add(post.getRating());
+				if(post.getRating()!=null){
+					ratings.add(post.getRating());
+
+				}
+				
 			}
 		}
 		return calculateAverage(ratings);
@@ -262,7 +267,7 @@ public class FirebasePostDataSource implements PostsDataSource {
 		String userID = (String) postData.get("userID");
 		String postDate = (String) postData.get("dateTime");
 		String title = postData.get("title") != null ? (String) postData.get("title") : " ";
-		Integer rating = postData.get("rating") != null ? ((Long) postData.get("rating")).intValue() : 0;
+		Integer rating = postData.get("rating") != null ? ((Long) postData.get("rating")).intValue(): null;
 		String content = postData.get("content") != null ? (String) postData.get("content") : " ";
 		String meals = postData.get("meals") != null ? (String) postData.get("meals") : " ";
 		String imageURL = postData.get("imageURL") != null ? (String) postData.get("imageURL") : " ";

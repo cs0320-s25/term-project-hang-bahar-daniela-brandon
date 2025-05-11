@@ -31,8 +31,7 @@ public class MockGetDormsTest {
 
 	}
 
-	public String tryRequest(String query) {
-		when(request.queryParams("query")).thenReturn(query);
+	public String tryRequest() {
 		String result = " ";
 		try {
 			result = (String) getDormsHandler.handle(request, response);
@@ -45,22 +44,9 @@ public class MockGetDormsTest {
 
 	@Test
 	public void testGetDorms() {
-		String result = tryRequest("getDorms");
+		String result = tryRequest();
 		assertTrue(result.contains("Goddard"));
 		assertTrue(result.contains("Hegeman"));
 		assertTrue(result.contains("Barbour"));
 	}
-
-	@Test
-	public void testGetDormsEmptyQuery() {
-		String result = tryRequest("");
-		assertTrue(result.contains("Missing query parameter"));
-	}
-
-	@Test
-	public void testGetDormsNullQuery() {
-		String result = tryRequest(null);
-		assertTrue(result.contains("Missing query parameter"));
-	}
-
 }

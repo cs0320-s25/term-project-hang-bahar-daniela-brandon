@@ -96,20 +96,6 @@ public class MockAddPostTest {
 		assertTrue(result.contains("Missing post type"));
 	}
 
-	@Test
-	public void testAddPostMissingPostID() {
-		JsonObject body = new JsonObject();
-		body.addProperty("type", "dorm");
-		body.addProperty("userID", "456");
-		body.addProperty("location", "Goddard");
-		body.addProperty("rating", 4.5);
-		body.addProperty("content", "good dorm");
-		body.addProperty("dateTime", "2023-10-02T11:00:00");
-		body.addProperty("title", "Great dorm experience!");
-
-		String result = tryRequest(body);
-		assertTrue(result.contains("Missing postID"));
-	}
 
 	@Test
 	public void testAddPostMissingUserID() {
@@ -141,20 +127,7 @@ public class MockAddPostTest {
 		assertTrue(result.contains("Missing location"));
 	}
 
-	@Test
-	public void testAddPostMissingRating() {
-		JsonObject body = new JsonObject();
-		body.addProperty("type", "dorm");
-		body.addProperty("postID", "123");
-		body.addProperty("userID", "456");
-		body.addProperty("location", "Goddard");
-		body.addProperty("content", "good dorm");
-		body.addProperty("dateTime", "2023-10-02T11:00:00");
-		body.addProperty("title", "Great dorm experience!");
 
-		String result = tryRequest(body);
-		assertTrue(result.contains("Missing rating"));
-	}
 
 	@Test
 	public void testAddPostMissingContent() {

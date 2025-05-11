@@ -24,6 +24,7 @@ public class Dorm {
     this.accessibility = accessibility;
     this.reviews = reviews;
     this.yearBuilt = yearBuilt;
+    this.description = description;
   }
 
   // Getters

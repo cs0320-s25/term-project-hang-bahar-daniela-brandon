@@ -114,13 +114,14 @@ public class Server {
 		}
 	}
 
-	/**
-	 * Runs Server.
-	 *
-	 * @param args none
-	 */
-	public static void main(String[] args) throws IOException {
-		setUpServer();
-		printDormRoomTypes();
-	}
+   /**
+    * Runs Server.
+    *
+    * @param args none
+    */
+   public static void main(String[] args) throws IOException {
+       FirebaseDormDatasource firebaseDormDatasource = new FirebaseDormDatasource();
+       setUpServer();
+       printDormRoomTypes();
+   }
 }

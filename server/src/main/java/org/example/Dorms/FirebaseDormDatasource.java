@@ -29,7 +29,7 @@ public class FirebaseDormDatasource implements DormDataSource {
   public FirebaseDormDatasource() throws IOException {
     // Initialize Firebase connection
     String workingDirectory = System.getProperty("user.dir");
-    Path firebaseConfigPath = Paths.get(workingDirectory, "src", "main", "resources",
+    Path firebaseConfigPath = Paths.get(workingDirectory, "server", "src", "main", "resources",
         "firebase_config.json");
     FileInputStream serviceAccount = new FileInputStream(firebaseConfigPath.toFile());
 
@@ -56,12 +56,15 @@ public class FirebaseDormDatasource implements DormDataSource {
       // Fetch accessibility info (keys are standardized names)
       Map<String, Integer> accessibilityMap = AccessibilityFetcher.fetchAccessibility();
 
+      // Fetch description and year built info
+      Map<String, Map<String, String>> dormInfoMap = DormInfoFetcher.fetchDormInfo();
+
       // Parse room types CSV (keys are also standardized names)
       DormRoomTypesParser parser = new DormRoomTypesParser();
-      Map<String, Set<String>> roomTypes = parser.parseDormRoomTypes("/Users/bahar/Desktop/dorm.csv");
+      Map<String, Set<String>> roomTypes = parser.parseDormRoomTypes("/Users/brandonsun/Desktop/CS32/term-project-hang-bahar-daniela-brandon/dorm.csv");
 
       // Upload data to Firebase
-      uploadDormData(roomTypes, accessibilityMap);
+      uploadDormData(roomTypes, accessibilityMap, dormInfoMap);
 
     } catch (Exception e) {
       System.err.println("Error loading and uploading dorm data: " + e.getMessage());
@@ -69,7 +72,7 @@ public class FirebaseDormDatasource implements DormDataSource {
     }
   }
 
-  private void uploadDormData(Map<String, Set<String>> roomTypes, Map<String, Integer> accessibilityMap) {
+  private void uploadDormData(Map<String, Set<String>> roomTypes, Map<String, Integer> accessibilityMap, Map<String, Map<String, String>> dormInfoMap) {
     // For each dorm in the room types map
     for (Map.Entry<String, Set<String>> entry : roomTypes.entrySet()) {
       String dormName = entry.getKey();
@@ -85,6 +88,15 @@ public class FirebaseDormDatasource implements DormDataSource {
         dormData.put("accessibility", accessibilityMap.get(dormName));
       } else {
         dormData.put("accessibility", "No Accessibility Info Available for " + dormName); // Default value
+      }
+
+      // Add dorm info map if available
+      if (dormInfoMap.containsKey(dormName)) {
+        dormData.put("description", dormInfoMap.get(dormName).get("description"));
+        dormData.put("built", dormInfoMap.get(dormName).get("built"));
+      } else {
+        dormData.put("description", "No description"); // Default value
+        dormData.put("built", "Unknown"); // Default value
       }
 
       // Add proximity and template

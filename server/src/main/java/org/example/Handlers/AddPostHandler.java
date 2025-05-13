@@ -57,7 +57,7 @@ public class AddPostHandler implements spark.Route {
 			}
 
 			dataSource.addPost(post);
-			return "Post added successfully: " + gson.toJson(post);
+			return gson.toJson(post);
 
 		} catch (Exception e) {
 			res.status(500);

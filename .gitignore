@@ -21,5 +21,4 @@ playwright/.cache/
 # mac
 .DS_Store
 
-server/src/main/resources/firebase_config.json
-server/src/main/resources/google_config.json
+server/src/main/resources/

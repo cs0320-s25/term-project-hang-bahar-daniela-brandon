@@ -1,10 +1,3 @@
-/**
- * An interface for set view state
- *
- * @params
- * isTableView: true if table view is selected, false if bar graph is selected
- * setView: select between table and bar graph view
- */
 interface ReviewCardProps {
   title: string;
   rating: number;

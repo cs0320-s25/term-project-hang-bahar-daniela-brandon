@@ -44,10 +44,6 @@ public class AccessibilityFetcher {
 				}
 			}
 			System.out.println("printing accessibility map");
-			// Output the result
-			// accessibilityMap.forEach((name, code) -> {
-			// System.out.println(name + " -> " + code);
-			// });
 
 		} catch (Exception e) {
 			e.printStackTrace();

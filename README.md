@@ -17,10 +17,11 @@
   - Authentication: Clerk
   - Backend: Java
   - Database: Firestore and Google Drive. All the data used in the web app, including posts, is stored in firebase and retrieved through there. The images used in the webapp are stored and retrieved through Google Drive.  
-  - API Calls: We have Handlers to process API calls from the frontend.
+  - API Calls: We have Handlers to process API calls from the frontend. For examople, adding dorms and posts to firestore, retrieving dorms and posts, deleting posts, and calculating average rating for dorms.
   - Searching Algorithm: allows user to search for dorm reviews based on keyword. We use Levenshtein Distance by Apache Commons Text to account for typos and English Stemmer by Tartarus Snowball to account for semantically related words (such as noise and noisy) in the search query. We assign a score according to the matching field. For example, a dorm name matching the search query will receive a higher score (because the user knows what dorm they are looking for) whereas a room type matching the search query will receive a lower score because many dorms have the same room type.
   - Matching algorithm: We match users to dorms based on their preferences. Users are asked to rank their expectations for various lifestyle factors, such as proximity, accessibility, and other criteria. Each criterion is assigned a score based on the user's input. The algorithm calculates a total score for each dorm and returns the top 3 matches, along with detailed information about each dorm's features and how they align with the user's priorities. If a user leaves a question blank, a default score of 0 is assigned to that criterion.
   - Accessibility was a core focus in the design of the interface. Features include: High-contrast, colorblind-friendly color schemes. ARIA labels for screen reader support. Full keyboard and button navigation considerations.
+
 
 # Errors/Bugs
 - N/A
@@ -47,6 +48,9 @@
 - jloncke (John Loncke)
 - Emmett Young
 - Chat GPT: OpenAI. (2023). ChatGPT (Mar 14 version) [Large language model]. https://chat.openai.com/chat (Utilized for conceptual understanding of sql vs non-sql based firestore, finding recommendations for stemming words and detecting typos, generating boilerplate code, debugging and some helper functions)
+- Antrophic.(2025).Claude(January 2025 version)[Large Language Model]. https://claude.ai/new.
+
 
 # Resources Used:
 - Lecture live repo, gear-up and sprint documentation and codebase
+- https://www.youtube.com/watch?v=rANfiSmyMTQ

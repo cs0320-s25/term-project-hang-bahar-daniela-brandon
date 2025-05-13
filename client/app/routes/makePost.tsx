@@ -13,6 +13,7 @@ interface PostData {
 }
 
 export default function MakePost() {
+  const navigate = useNavigate();
   const { isSignedIn, user } = useUser();
   const userId = isSignedIn ? user.id : "";
   
@@ -20,7 +21,7 @@ export default function MakePost() {
   const [formData, setFormData] = useState<PostData>({
     type: "dorm",
     title: "",
-    location: "Barbour Hall",
+    location: "barbourhall",
     content: "",
   });
 
@@ -54,12 +55,21 @@ export default function MakePost() {
       ...prev,
       [name]: value,
     }));
-    console.log(formData);
   };
 
   function handleSubmit(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
+    if (formData.title == "") {
+      alert("Please enter a title");
+      return;
+    }
+    if (formData.content == "") {
+      alert("Please enter a review");
+      return;
+    }
     if (file) {
-      uploadImage({file: file}).then((response) => {
+      const imageData = new FormData();
+      imageData.append("file", file);
+      uploadImage(imageData).then((response) => {
         const imageURL = response.imageURL;
         console.log(imageURL);
         const submitData = {
@@ -67,20 +77,26 @@ export default function MakePost() {
           userID: userId,
           rating,
           imageURL,
-        }
-      })
+          dateTime: new Date().toISOString(),
+        };
+        addPost(submitData).then((response) => {
+          if (response) {
+            navigate("/reviews");
+          } else {
+            console.error("Error adding post:", response.error);
+          }
+        });
+      });
     } else {
       const submitData = {
         ...formData,
         userID: userId,
         rating,
-        imageURL: null,
+        dateTime: new Date().toISOString(),
       };
       addPost(submitData).then((response) => {
-        console.log(response);
-        if (response.success) {
-          console.log("Post added successfully");
-          // Redirect or show success message
+        if (response) {
+          navigate("/reviews");
         } else {
           console.error("Error adding post:", response.error);
         }

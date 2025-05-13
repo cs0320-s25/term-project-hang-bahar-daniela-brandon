@@ -5,9 +5,20 @@ export interface Dorm {
   communities: string[];
   proximity: string[];
   roomTypes: string[];
-  reviews: string[];
+  posts: Post[];
   description: string;
   yearBuilt: string;
+}
+
+export interface Post {
+  postID: string;
+  userID: string;
+  type: "dining" | "dorm";
+  title: string;
+  content: string;
+  location: string;
+  rating: number;
+  dateTime: string;
 }
 
 export const ROOM_TYPES = [

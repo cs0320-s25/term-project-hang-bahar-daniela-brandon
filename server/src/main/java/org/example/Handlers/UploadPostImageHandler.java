@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.Files;
 
+import org.example.Posts.ImageURL;
 import org.example.Posts.PostsDataSource;
 
 import javax.servlet.MultipartConfigElement;
@@ -51,7 +52,8 @@ public class UploadPostImageHandler implements Route {
                 Files.copy(inputStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
             }
 			String imageUrl = dataSource.uploadImage(file);
-			return imageUrl;
+			res.status(200);
+			return gson.toJson(new ImageURL(imageUrl));
 
 		} catch (IllegalStateException e) {
 			res.status(400);
@@ -64,5 +66,4 @@ public class UploadPostImageHandler implements Route {
 			return "Error processing request: " + e.getMessage();
 		}
 	}
-
 }

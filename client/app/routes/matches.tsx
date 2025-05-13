@@ -33,7 +33,7 @@ function Leaderboard() {
               key={index}
               name={dorm.dorm.name}
               roomTypes={dorm.dorm.roomTypes}
-              posts={dorm.dorm.reviews}
+              posts={dorm.dorm.posts || []}
               location={dorm.dorm.proximity[0]}
               imgId={dormNametoImageId(dorm.dorm.name)}
             />

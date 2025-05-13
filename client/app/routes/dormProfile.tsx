@@ -51,13 +51,6 @@ function DormProfile(){
               "☆".repeat(5 - Math.floor(averageRating))}
           </div>
         </div>
-        <ul className="list-disc pl-6">
-          {dormData.reviews.map((review, index) => (
-            <li key={index} className="mb-2">
-              {review}
-            </li>
-          ))}
-        </ul>
       </div>
 
       <div className="mb-6">
@@ -69,6 +62,25 @@ function DormProfile(){
             allow="autoplay"
           ></iframe>
         </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {dormData.posts.map((post) => (
+          <div
+            key={post.postID}
+            className="border border-gray-300 rounded p-4 shadow"
+          >
+            <h1 className="text-2xl  text-black font-bold mb-2">
+              {post.title}
+            </h1>
+            <h3 className="text-lg  text-primary font-bold mb-2">
+              {dormIDToName(post.location)}
+            </h3>
+            <p className="text-gray-700">{post.content}</p>
+            <p className="text-gray-500 mt-2">
+              Posted on: {new Date(post.dateTime).toLocaleDateString()}
+            </p>
+          </div>
+        ))}
       </div>
     </div>
   );

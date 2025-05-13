@@ -1,4 +1,4 @@
-export async function getAllDormPosts() {
+export async function getAllPosts() {
   try {
     const url = "http://localhost:5678/get-posts";
 
@@ -21,7 +21,7 @@ export async function addPost(form: {
   userID: string;
   location: string;
   content: string;
-  imageURL: string | null;
+  imageURL?: string;
 }): Promise<any> {
   const url = "http://localhost:5678/add-post";
   const response = await fetch(url, {
@@ -34,7 +34,7 @@ export async function addPost(form: {
   return await response.json();
 }
 
-export async function uploadImage(formData: { file: File}): Promise<any> {
+export async function uploadImage(formData: FormData): Promise<any> {
   const url = "http://localhost:5678/upload-image";
   const response = await fetch(url, {
     method: "POST",

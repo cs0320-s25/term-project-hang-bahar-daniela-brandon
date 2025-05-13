@@ -81,7 +81,7 @@ export default function Home() {
                 key={index}
                 name={dorm.name}
                 roomTypes={dorm.roomTypes}
-                posts={dorm.reviews}
+                posts={dorm.posts || []}
                 location={dorm.proximity[0]}
                 imgId={dormNametoImageId(dorm.name)}
               />

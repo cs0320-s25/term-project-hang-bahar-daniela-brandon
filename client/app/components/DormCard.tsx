@@ -1,9 +1,9 @@
-import { dormIDToName } from "~/helpers";
+import { dormIDToName, type Post } from "~/helpers";
 
 interface DormCardProps {
   name: string;
   roomTypes: string[];
-  posts: string[];
+  posts: Post[];
   location: string;
   imgId: string;
 }
@@ -15,6 +15,7 @@ const DormCard = ({
   location,
   imgId,
 }: DormCardProps) => {
+  console.log(imgId);
   return (
     <div 
     className="bg-white shadow-md rounded-lg p-6">
@@ -43,9 +44,9 @@ const DormCard = ({
             {posts.length === 0 && (
               <p className="text-gray-700">No posts available</p>
             )}
-            {posts.map((post, index) => (
+            {posts.slice(0, 3).map((post, index) => (
               <li key={index} className="text-gray-700">
-                {post}
+                {post.content}
               </li>
             ))}
           </ul>

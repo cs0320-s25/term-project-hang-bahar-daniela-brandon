@@ -34,13 +34,13 @@ public class DormInfoFetcher {
         JSONObject attributes = features.getJSONObject(i).getJSONObject("attributes");
         String name = attributes.optString("Property_Name", null);
 
-        if (name != null && !attributes.isNull("Long_Description") && !attributes.isNull("Year_of_Construction") && nameMapping.containsKey(name)) {
+        if (name != null && !attributes.isNull("Long_Description") && !attributes.isNull("Year_of_Construction") && AccessibilityFetcher.getNameMapping().containsKey(name)) {
           Map<String, String> info = new HashMap<>();
           String desc = attributes.getString("Long_Description");
           int year = attributes.getInt("Year_of_Construction");
           info.put("description", desc);
           info.put("built", String.valueOf(year));
-          dormInfoMap.put(nameMapping.get(name), info);
+          dormInfoMap.put(AccessibilityFetcher.getNameMapping().get(name), info);
         }
       }
       System.out.println("printing dorm info map");
@@ -54,38 +54,4 @@ public class DormInfoFetcher {
     }
     return dormInfoMap;
   }
-
-  static Map<String, String> nameMapping = Map.ofEntries(
-      Map.entry("Buxton House: Wriston Quad", "buxtonhouse"),
-      Map.entry("Hope College", "hopecollege"),
-      Map.entry("Barbour Hall", "barbourhall"),
-      Map.entry("Diman House: Wriston Quad", "dimanhouse"),
-      Map.entry("Young Orchard Ave 002", "youngorchard2"),
-      Map.entry("Chapin House: Wriston Quad", "chapinhouse"),
-      Map.entry("Sears House: Wriston Quad", "searshouse"),
-      Map.entry("Chen Family Hall", "chenfamilyhall"),
-      Map.entry("Hegeman Hall", "hegemanhall"),
-      Map.entry("Sternlicht Commons", "sternlichtcommons"),
-      Map.entry("Graduate Center A", "gradcentera"),
-      Map.entry("Harkness House: Wriston Quad", "harknesshouse"),
-      Map.entry("Graduate Center B", "gradcenterb"),
-      Map.entry("Slater Hall", "slaterhall"),
-      Map.entry("Graduate Center C", "gradcenterc"),
-      Map.entry("Graduate Center D", "gradcenterd"),
-      Map.entry("Wayland House: Wriston Quad", "waylandhouse"),
-      Map.entry("Marcy House: Wriston Quad", "marcyhouse"),
-      Map.entry("Vartan Gregorian Quad A", "gregorianquada"),
-      Map.entry("Vartan Gregorian Quad B", "gregorianquadb"),
-      Map.entry("Minden Hall", "mindenhall"),
-      Map.entry("Goddard House: Wriston Quad", "goddardhouse"),
-      Map.entry("Olney House: Wriston Quad", "olneyhouse"),
-      Map.entry("Caswell Hall", "caswellhall"),
-      Map.entry("Young Orchard Ave 004", "youngorchard4"),
-      Map.entry("Littlefield Hall", "littlefieldhall"),
-      Map.entry("Young Orchard Ave 010", "youngorchard10"),
-      Map.entry("William and Ami Danoff Hall", "danoffhall"),
-      Map.entry("Machado (Antonio) House", "machadohouse"),
-      Map.entry("King House", "kinghouse"),
-      Map.entry("Perkins Hall", "perkinshall")
-  );
 }

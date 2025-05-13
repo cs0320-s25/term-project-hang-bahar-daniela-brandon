@@ -32,7 +32,7 @@ import org.example.Dorms.AccessibilityFetcher;
  * dining.
  * It provides methods to add, delete, and retrieve posts, as well as upload
  * images to Google Drive.
- * It also includes helper methods for location normalization and average rating
+ * It also includes helper for uploading images and average rating
  * calculation.
  * 
  */
@@ -107,7 +107,7 @@ public class FirebasePostDataSource implements PostsDataSource {
 		try {
 			// Determine which collection to use based on post type
 			DocumentReference locationDocRef = postType.equals("dorm")
-					? dormPostsRef.document(normalizeLocation(location))
+					? dormPostsRef.document(location)
 					: diningPostsRef.document(location);
 			DocumentSnapshot document = locationDocRef.get().get();
 
@@ -172,14 +172,12 @@ public class FirebasePostDataSource implements PostsDataSource {
 			List<AbstractPost> allPosts = getAllPosts();
 			if ("dorm".equals(type)) {
 				collectionRef = dormPostsRef;
-				location = normalizeLocation(location);
 			} else if ("dining".equals(type)) {
 				collectionRef = diningPostsRef;
 			} else {
 				throw new IllegalArgumentException("Unknown post type: " + type);
 			}
 
-			final String finalLocation = location;
 			DocumentReference docRef = collectionRef.document(location);
 
 			firestore.runTransaction(transaction -> {
@@ -188,14 +186,14 @@ public class FirebasePostDataSource implements PostsDataSource {
 				List<Map<String, Object>> posts = (List<Map<String, Object>>) snapshot.get("posts");
 
 				if (posts == null || posts.isEmpty()) {
-					throw new NoSuchElementException("No posts found for location: " + finalLocation);
+					throw new NoSuchElementException("No posts found for location: " + location);
 				}
 
 				for (Map<String, Object> post : posts) {
 					if (userID.equals(post.get("userID")) && postID.equals(post.get("postID"))) {
 						transaction.update(docRef, "posts", FieldValue.arrayRemove(post));
 						allPosts.removeIf(p -> p.getPostID().equals(postID) && p.getUserID().equals(userID)
-								&& p.getLocation().equals(finalLocation) && p.getType().equals(type));
+								&& p.getLocation().equals(location) && p.getType().equals(type));
 						break;
 					}
 				}
@@ -234,7 +232,7 @@ public class FirebasePostDataSource implements PostsDataSource {
 		List<Integer> ratings = new ArrayList<>();
 
 		for (AbstractPost post : allPosts) {
-			if (post.getLocation().toLowerCase().contains(location.toLowerCase())) {
+			if (post.getLocation().toLowerCase().equals(location.toLowerCase())) {
 				if (post.getRating() != null) {
 					ratings.add(post.getRating());
 
@@ -257,7 +255,7 @@ public class FirebasePostDataSource implements PostsDataSource {
 		try {
 			var documents = dormPostsRef.get().get().getDocuments();
 			for (var doc : documents) {
-				String dormLocation = getLocationFromNormalized(doc.getId());
+				String dormLocation = doc.getId();
 				List<Map<String, Object>> postsList = (List<Map<String, Object>>) doc.get("posts");
 
 				if (postsList != null) {
@@ -358,43 +356,7 @@ public class FirebasePostDataSource implements PostsDataSource {
 		return sum / ratings.size();
 	}
 
-	/**
-	 * Retrieves a mapping of location names to their normalized forms.
-	 *
-	 * @return A map containing location names and their normalized forms.
-	 */
-	private Map<String, String> getLocationMapping() {
-		Map<String, String> mapping = AccessibilityFetcher.getNameMapping();
-		return mapping;
-	}
-
-	/**
-	 * Normalizes a location name using a predefined mapping.
-	 *
-	 * @param location The location name to be normalized.
-	 * @return The normalized location name.
-	 */
-	private String normalizeLocation(String location) {
-		final Map<String, String> nameMapping = getLocationMapping();
-		return nameMapping.get(location);
-	}
-
-	/**
-	 * Retrieves the original location name from a normalized location name.
-	 *
-	 * @param normalizedLocation The normalized location name.
-	 * @return The original location name.
-	 */
-	private String getLocationFromNormalized(String normalizedLocation) {
-		final Map<String, String> nameMapping = getLocationMapping();
-		for (Map.Entry<String, String> entry : nameMapping.entrySet()) {
-			if (entry.getValue().equals(normalizedLocation)) {
-				return entry.getKey();
-			}
-		}
-		return null;
-	}
-
+	
 	/**
 	 * Creates a Google Drive service using the provided service account key.
 	 *

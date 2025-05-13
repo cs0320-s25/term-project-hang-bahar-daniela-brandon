@@ -13,4 +13,8 @@ type Params = {
   "/recommend": {};
   "/login": {};
   "/sign-up": {};
+  "/dorms/:dorm": {
+    "dorm": string;
+  };
+  "/dorms/match": {};
 };

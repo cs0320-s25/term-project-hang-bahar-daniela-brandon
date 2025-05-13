@@ -1,25 +1,16 @@
 import ReviewCard from "~/components/ReviewCard";
 import type { Route } from "../../.react-router/types/client/app/routes/+types/home";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { getAllDorms } from "~/queries/dorms";
 import DormCard from "~/components/DormCard";
+import { dormNametoImageId, type Dorm } from "~/helpers";
 
 export function meta({}: Route.MetaArgs) {
   return [
     { title: "Brown Bed n' Breakfast" },
     { name: "Rate places on campus!" },
   ];
-}
-
-interface Dorm {
-  name: string;
-  accessibility: number;
-  bathrooms: string[];
-  communities: string[];
-  proximity: string;
-  roomTypes: string[];
-  reviews: string[];
 }
 
 export default function Home() {
@@ -31,20 +22,13 @@ export default function Home() {
      setSummaryType(type);
    };
 
-   getAllDorms().then(
+  useEffect(() => {
+    getAllDorms().then(
       (fetchedDorms) => {
         setDorms(fetchedDorms);
       }
-   );
-
-  const dormReviews = [
-    { title: "Andrews Hall", rating: 4, topPosts: ["blah", "blah 2"], lastUpdated: "2022-01-01" },
-    { title: "Barbour Hall", rating: 5, topPosts: [], lastUpdated: "2022-01-02" },
-    { title: "Dorm 3", rating: 3, topPosts: [], lastUpdated: "2022-01-03" },
-    { title: "Dorm 4", rating: 2, topPosts: [], lastUpdated: "2022-01-04" },
-    { title: "Dorm 5", rating: 5, topPosts: [], lastUpdated: "2022-01-05" },
-    { title: "Dorm 6", rating: 4, topPosts: [], lastUpdated: "2022-01-06" },
-  ];
+    );
+  }, []);
   
   const diningReviews = [
     { title: "Dining Hall 1", rating: 4, topPosts: ["blah", "blah 2"], lastUpdated: "2022-01-01" },
@@ -97,8 +81,9 @@ export default function Home() {
                 key={index}
                 name={dorm.name}
                 roomTypes={dorm.roomTypes}
-                topPosts={dorm.reviews}
-                location={dorm.proximity}
+                posts={dorm.reviews}
+                location={dorm.proximity[0]}
+                imgId={dormNametoImageId(dorm.name)}
               />
             ))}
           </div>

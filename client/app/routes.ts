@@ -7,4 +7,6 @@ export default [
   route("/recommend", "routes/recommend.tsx"),
   route("/login", "routes/login.tsx"),
   route("/sign-up", "routes/signUp.tsx"),
+  route("/dorms/:dorm", "routes/dormProfile.tsx"),
+  route("/dorms/match", "routes/matches.tsx"),
 ] satisfies RouteConfig;

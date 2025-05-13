@@ -1,11 +1,36 @@
-import { RedirectToSignIn, SignedIn, SignedOut } from "@clerk/clerk-react";
-import React, { useState } from "react";
+import { RedirectToSignIn, SignedIn, SignedOut, useUser } from "@clerk/clerk-react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { dormIDToName, type Dorm } from "~/helpers";
+import { getAllDorms } from "~/queries/dorms";
+import { addPost, uploadImage } from "~/queries/posts";
+
+interface PostData {
+  type: "dining" | "dorm";
+  title: string;
+  location: string
+  content: string;
+}
 
 export default function MakePost() {
+  const { isSignedIn, user } = useUser();
+  const userId = isSignedIn ? user.id : "";
+  
+  const [dormNames, setDormNames] = useState<string[]>([]);
+  const [formData, setFormData] = useState<PostData>({
+    type: "dorm",
+    title: "",
+    location: "Barbour Hall",
+    content: "",
+  });
 
-  const ALL_DORMS = [
-    'Arch-Bron', 'Ev-Pole', 'James-Mead', 'Andrews Hall', 'Metcalf', 'Miller Hall', 'Morriss Hall', 'Champlin', 'Emery', 'Woolley Hall', 'New Pembroke 1', 'New Pembroke 2', 'New Pembroke 3', 'New Pembroke 4', '111 Brown St', '219 Bowen St', '315 Thayer', 'Barbour Hall', 'Buxton House', 'Chapin House', 'Chen Family Hall', 'Danoff Hall', 'Diman House', 'Goddard House', 'Harkness House', 'King House', 'Machado House', 'Marcy House', 'Olney House', 'Sears House', 'Sternlicht Commons', 'West House', 'Caswell Hall', 'Grad Center A', 'Grad Center B', 'Grad Center C', 'Grad Center D', 'Greg A', 'Greg B', 'Hegeman Hall', 'Hope College', 'Littlefield Hall', 'Minden Hall', 'Perkins Hall', 'Slater Hall', 'Young Orchard 10', 'Young Orchard 2', 'Young Orchard 4'];
+  useEffect(() => {
+    getAllDorms().then((fetchedDorms) => {
+      fetchedDorms.map((dorm: Dorm) => {
+        setDormNames((prev) => [...prev, dorm.name]);
+      });
+    });
+  }, []);
 
   const ALL_DINING_HALLS = ['V-Dub', 'Andrews', 'The Ratty', 'Jo\'s', 'Blue Room', 'Ivy Room', 'Gourmet to Go', 'SOE Cafe'];
 
@@ -25,25 +50,42 @@ export default function MakePost() {
     >
   ) => {
     const { name, value } = event.target;
-    postData[name] = value;
-    console.log(postData);
-  };
-
-  const postData: Record<string, string> = {
-    title: "",
-    location: "",
-    content: "",
-    dateTime: new Date().toISOString(),
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    console.log(formData);
   };
 
   function handleSubmit(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
-    const submitData = {
-      ...postData,
-      rating,
-      type: selectedOption,
-      file,
+    if (file) {
+      uploadImage({file: file}).then((response) => {
+        const imageURL = response.imageURL;
+        console.log(imageURL);
+        const submitData = {
+          ...formData,
+          userID: userId,
+          rating,
+          imageURL,
+        }
+      })
+    } else {
+      const submitData = {
+        ...formData,
+        userID: userId,
+        rating,
+        imageURL: null,
+      };
+      addPost(submitData).then((response) => {
+        console.log(response);
+        if (response.success) {
+          console.log("Post added successfully");
+          // Redirect or show success message
+        } else {
+          console.error("Error adding post:", response.error);
+        }
+      })
     }
-    alert(`Post submitted! ${JSON.stringify(submitData)}`);
   }
   return (
     <div>
@@ -62,10 +104,10 @@ export default function MakePost() {
             </div>
             <div className="flex space-x-4 mb-4">
               <button
-                className={`px-4 py-2 rod ${
+                className={`${
                   selectedOption === "Dorms"
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200"
+                    ? "bg-white text-black"
+                    : "bg-primary text-white"
                 }`}
                 onClick={() => setSelectedOption("Dorms")}
               >
@@ -91,9 +133,9 @@ export default function MakePost() {
                   name="location"
                   onChange={handleChange}
                 >
-                  {ALL_DORMS.map((dorm) => (
+                  {dormNames.map((dorm) => (
                     <option key={dorm} value={dorm}>
-                      {dorm}
+                      {dormIDToName(dorm)}
                     </option>
                   ))}
                 </select>

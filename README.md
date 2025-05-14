@@ -5,7 +5,7 @@
 - Github Repo: https://github.com/cs0320-s25/term-project-hang-bahar-daniela-brandon.git
 - We built a web application for Brown University students to post and read reviews of their dining halls and residential halls. People with a Brown email can log in and post reviews. Our application is divided into two parts: Dining and Dorms. Under each page, there is a dashboard of the dining halls and dorms. When the user clicks on each dorm/dining hall, a description of that dorm/dining hall along with all the reviews will show up. Users can search for reviews and find dorms that match their preferences and lifestyles, like proximity to a certain place on campus or program housing. 
 - Time: 
-- Our team had a clear project plan, distributed tasks early, and set expectations based on the project timeline.
+- Our team had a clear project plan, distributed tasks early, and set expectations based on the project timeline. Specifically:
     *Week 1: Focused on planning and designing the algorithmic structure of the project.
     *Week 2: Brandon worked on the front-end framework. Daniela developed the backend for posting reviews and handled testing. Hang and Bahar focused on implementing the matching, searching, and information retrieval algorithms.
     *Week 3: All team members collaborated to replace mock data with real-time data from the Firestore database, integrating backend and frontend components, more testing.
@@ -48,6 +48,7 @@
 - eygeer (Eliot Geer)
 - jloncke (John Loncke)
 - Emmett Young
+- Alexa Shield (anshield)
 - Chat GPT: OpenAI. (2023). ChatGPT (Mar 14 version) [Large language model]. https://chat.openai.com/chat (Utilized for conceptual understanding of sql vs non-sql based firestore, finding recommendations for stemming words and detecting typos, generating boilerplate code, debugging and some helper functions)
 - Antrophic.(2025).Claude(January 2025 version)[Large Language Model]. https://claude.ai/new.
 (Utilized for code design questions, debugging, and adopted code)

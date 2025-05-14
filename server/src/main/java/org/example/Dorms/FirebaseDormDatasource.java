@@ -482,4 +482,10 @@ public class FirebaseDormDatasource implements DormDataSource {
 
 		return score;
 	}
+
+	
+	@Override
+	public List<DormSearchResult> getInfo(JsonObject info) {
+		return List.of();
+	}
 }

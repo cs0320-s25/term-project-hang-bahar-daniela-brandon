@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * This class maps list of dorms to their corresponding special or program housing categories
+ */
+
 public class CommunityHouseAssigner {
   private static final Map<String, List<String>> COMMUNITY_MAP = new HashMap<>();
 

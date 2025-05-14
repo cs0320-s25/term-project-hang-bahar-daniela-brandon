@@ -21,12 +21,22 @@ import java.util.concurrent.ExecutionException;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.tartarus.snowball.ext.englishStemmer;
 
+/**
+ * A data source implementation that connects to a Firestore backend to store and retrieve dorm data.
+ * It handles real-time updates, search, and matching functionality.
+ */
 public class FirebaseDormDatasource implements DormDataSource {
 
 	private final Firestore firestore;
 	private final CollectionReference dormsRef;
 	private List<Dorm> cachedDorms = new ArrayList<>();
 	private boolean initialized = false;
+
+	/**
+     	* Initializes Firebase connection, sets up Firestore listener, and loads initial dorm data.
+     	*
+     	* @throws IOException if Firebase credentials are not found or readable
+     	*/
 
 	public FirebaseDormDatasource() throws IOException {
 		// Initialize Firebase connection
@@ -74,6 +84,11 @@ public class FirebaseDormDatasource implements DormDataSource {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	* Uploads dorm data from external sources (CSV and JSON) to Firestore.
+	* Data includes accessibility, room types, descriptions, and proximity.
+	*/
 
 	private void uploadDormData(Map<String, Set<String>> roomTypes, Map<String, Integer> accessibilityMap,
 			Map<String, Map<String, String>> dormInfoMap) {
@@ -126,6 +141,9 @@ public class FirebaseDormDatasource implements DormDataSource {
 		}
 	}
 
+	/**
+	* Sets up a real-time listener on Firestore to keep the local dorm list up to date.
+	*/
 	private void initializeFirestoreListener() {
 		dormsRef.addSnapshotListener((snapshots, error) -> {
 			if (error != null) {
@@ -209,18 +227,11 @@ public class FirebaseDormDatasource implements DormDataSource {
 		});
 	}
 
-	// public void addDorm(Dorm dorm) {
-	// Map<String, Object> dormData = new HashMap<>();
-	// dormData.put("dormName", dorm.getName());
-	// dormData.put("roomType", dorm.getRoomTypes());
-	// dormData.put("Community", dorm.getCommunities());
-	// dormData.put("accessibility", dorm.getAccessibility());
-	// dormData.put("proximity", dorm.getProximity());
-	//
-	// // Use dorm name as document ID for easier retrieval
-	// dormsRef.document(dorm.getName()).set(dormData);
-	// }
-
+	/**
+	* Retrieves all dorms from Firestore, using cached list if available.
+	*
+	* @return a list of Dorm objects
+	*/
 	@Override
 	public List<Dorm> getAllDorms() {
 		System.out.println("Fetching all dorms from Firestore.");
@@ -276,21 +287,6 @@ public class FirebaseDormDatasource implements DormDataSource {
 
 						// Convert to List for reviews
 						List<Map<String, Object>> reviewObjects = (List<Map<String, Object>>) doc.get("reviews");
-						// List<String> reviews = new ArrayList<>();
-						// if (reviewObjects != null) {
-						// for (Object obj : reviewObjects) {
-						// reviews.add(obj.toString());
-						// }
-						// }
-
-						// // Get description and year built
-						// String built = doc.getString("built");
-						// String description = doc.getString("description");
-						//
-						// Dorm dorm = new Dorm(name, roomTypes, bathrooms, proximity, communities,
-						// accessibility, reviews,
-						// built != null ? built : "Unknown", description != null ? description : "No
-						// description available");
 
 						// Get description and year built
 						String built = doc.getString("built");
@@ -316,6 +312,15 @@ public class FirebaseDormDatasource implements DormDataSource {
 		return new ArrayList<>(cachedDorms);
 	}
 
+	
+
+    /**
+     * Searches all dorms by comparing the query to dorm name, room type, community, and proximity.
+     * Uses stemming and Levenshtein distance to score matches.
+     *
+     * @param query user input text
+     * @return top 3 best-matching dorms based on the query
+     */
 	@Override
 	public List<DormSearchResult> searchDorms(String query) {
 		List<DormSearchResult> results = new ArrayList<>();
@@ -337,13 +342,26 @@ public class FirebaseDormDatasource implements DormDataSource {
 	 * Stem a word to root form to match semantically related words
 	 */
 	englishStemmer stemmer = new englishStemmer();
-
+	
+	/**
+	* Stems a given word using the Snowball stemmer.
+	*
+	* @param word the input word
+	* @return the stemmed form of the word
+	*/
 	String stem(String word) {
 		stemmer.setCurrent(word.toLowerCase());
 		stemmer.stem();
 		return stemmer.getCurrent();
 	}
 
+	/**
+	* Calculates a score for a dorm based on similarity to a search query.
+	*
+	* @param dorm the dorm to evaluate
+	* @param query the search query
+	* @return an integer score representing relevance
+	*/
 	private int calculateDormScore(Dorm dorm, String query) {
 		LevenshteinDistance ld = new LevenshteinDistance(Integer.MAX_VALUE);
 		String stemmedQuery = stem(query.toLowerCase());
@@ -400,7 +418,13 @@ public class FirebaseDormDatasource implements DormDataSource {
 
 		return score;
 	}
-
+	
+	/**
+	* Matches dorms based on user-defined preferences such as room type, community, proximity, and accessibility.
+	*
+	* @param preferences a JSON object representing user preferences
+	* @return top 3 matching dorms
+	*/
 	@Override
 	public List<DormSearchResult> matchDorms(JsonObject preferences) {
 		List<DormSearchResult> results = new ArrayList<>();
@@ -417,35 +441,13 @@ public class FirebaseDormDatasource implements DormDataSource {
 		return results.subList(0, Math.min(3, results.size()));
 	}
 
-	@Override
-	public List<DormSearchResult> getInfo(JsonObject info) {
-		return new ArrayList<>();
-	}
-
-	// @Override
-	// public List<DormSearchResult> getInfo(JsonObject info) {
-	// List<DormSearchResult> results = new ArrayList<>();
-	//
-	// for (Dorm dorm : getAllDorms()) {
-	// String dormName = dorm.getName();
-	// DormSearchResult result = new DormSearchResult();
-	// result.setDormName(dormName);
-	//
-	// // Pull extra info from the map if available
-	// if (dormInfoMap.containsKey(dormName)) {
-	// result.setDescription(dormInfoMap.get(dormName).get("description"));
-	// result.setDateBuilt(dormInfoMap.get(dormName).get("built"));
-	// } else {
-	// result.setDescription("No description");
-	// result.setDateBuilt("Unknown");
-	// }
-	//
-	// results.add(result);
-	// }
-	//
-	// return results;
-	// }
-
+	/**
+	* Calculates a match score between a dorm and a user's structured preferences.
+	*
+	* @param dorm the dorm to evaluate
+	* @param preferences the user's preferences
+	* @return a numerical score
+	*/
 	private int calculateMatchScoreFromPreferences(Dorm dorm, JsonObject preferences) {
 		int score = 0;
 

@@ -4,6 +4,11 @@ package org.example.Dorms;
 import com.google.gson.JsonObject;
 import java.util.*;
 
+
+/**
+ * This class is similar to the FirebaseDormDataSource. It has a mock list of dorms and their corresponding attributes. 
+ * Includes methods to search through the dorm given the search query and match with a dorm based on user input.
+ */
 public class MockDormDataSource implements DormDataSource {
 	private List<Dorm> dorms;
 
@@ -130,11 +135,20 @@ public class MockDormDataSource implements DormDataSource {
 				barbourPosts));
 	}
 
+	/**
+	 * @return: returns the list of dorms
+	 */
+
 	@Override
 	public List<Dorm> getAllDorms() {
 		return new ArrayList<>(dorms);
 	}
 
+	/**
+	 * searches through the mock dorm list
+ 	 * @param: word query to search for
+    	 * @return: list of dorms that has the search query
+	 */
 	@Override
 	public List<DormSearchResult> searchDorms(String query) {
 		List<DormSearchResult> results = new ArrayList<>();

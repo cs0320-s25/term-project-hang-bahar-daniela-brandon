@@ -24,7 +24,8 @@
 
 
 # Errors/Bugs
-- N/A
+- Support for dining hall description and posts are lacking, most functionality focuses on dorms
+- Sometimes when post requests are fulfilled, it doesn't immediately propagate to the front end 
 
 # Tests
 - We test for:

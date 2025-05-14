@@ -11,6 +11,11 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+/**
+ * This class fetches accessibility scores for dorms from Brown University resources and maps them to their corresponding dorm names. It also includes a helper function
+ * to standardize dorm names (e.g., removing spaces, converting to lowercase), which ensures consistent naming across Firebase and other parts of the project.
+ */
+
 public class AccessibilityFetcher {
 	public static Map<String, Integer> fetchAccessibility() {
 		Map<String, Integer> accessibilityMap = new HashMap<>();

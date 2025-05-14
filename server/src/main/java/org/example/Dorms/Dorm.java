@@ -5,6 +5,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.Map;
 
+/**
+ * Represents a dorm at Brown University with attributes such as name, room types,
+ * proximity, accessibility score, and student-submitted posts. This class provides
+ * getters for all properties and utility methods to extract reviews.
+ * 
+ * Used throughout the project to create, access, and modify dorm-related data.
+ */
+
 public class Dorm {
 	private String name;
 	private Set<String> roomTypes;

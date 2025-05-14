@@ -34,6 +34,25 @@ export async function addPost(form: {
   return await response.json();
 }
 
+export async function deletePost(
+  userID: string,
+  postID: string,
+  type: string,
+  location: string
+): Promise<any> {
+  const url = `http://localhost:5678/delete-post?postID=${postID}&userID=${userID}&location=${location}&type=${type}`;
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Error fetching dorm info:", error);
+    throw error;
+  }
+}
+
 export async function uploadImage(formData: FormData): Promise<any> {
   const url = "http://localhost:5678/upload-image";
   const response = await fetch(url, {

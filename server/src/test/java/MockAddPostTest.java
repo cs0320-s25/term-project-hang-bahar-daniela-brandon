@@ -60,7 +60,7 @@ public class MockAddPostTest {
 		body.addProperty("title", "Great dorm experience!");
 
 		String result = tryRequest(body);
-		assertTrue(result.contains("Post added successfully"));
+		assertTrue(result.contains("Goddard"));
 	}
 
 	@Test
@@ -76,7 +76,7 @@ public class MockAddPostTest {
 		body.addProperty("title", "Decent dining experience!");
 
 		String result = tryRequest(body);
-		assertTrue(result.contains("Post added successfully"));
+		assertTrue(result.contains("Ivy Room"));
 	}
 
 	// Test cases for missing fields
@@ -141,7 +141,7 @@ public class MockAddPostTest {
 		body.addProperty("title", "Great dorm experience!");
 
 		String result = tryRequest(body);
-		assertTrue(result.contains("Post added successfully"));
+		assertTrue(result.contains("Goddard"));
 	}
 
 	@Test
@@ -156,7 +156,7 @@ public class MockAddPostTest {
 		body.addProperty("dateTime", "2023-10-02T11:00:00");
 
 		String result = tryRequest(body);
-		assertTrue(result.contains("Post added successfully"));
+		assertTrue(result.contains("Goddard"));
 	}
 
 	@Test

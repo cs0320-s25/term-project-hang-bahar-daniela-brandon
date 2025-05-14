@@ -32,7 +32,7 @@ export function NavBar() {
         </li>
         <li>
           <Link to="/make-post" className="navbar-link">
-            +
+            Write Post
           </Link>
         </li>
       </ul>

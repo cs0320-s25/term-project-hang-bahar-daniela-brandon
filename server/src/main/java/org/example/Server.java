@@ -64,7 +64,7 @@ public class Server {
 		Spark.post("/match", new MatchHandler(firebaseDS));
 		Spark.post("/upload-image", new UploadPostImageHandler(postsDataSource));
 		Spark.get("/average-rating", new GetAverageRatingHandler(postsDataSource));
-		Spark.delete("/delete-post", new DeletePostHandler(postsDataSource));
+		Spark.get("/delete-post", new DeletePostHandler(postsDataSource));
 		// Spark.get("/get-dorms", new GetDormsHandler(firebaseDS));
 		// Spark.get("/get-dining-halls", new GetDiningHallsHandler(firebaseDS));
 		// Spark.get("/get-dining-halls", new GetDiningHallsHandler(firebaseDS));

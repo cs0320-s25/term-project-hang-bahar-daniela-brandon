@@ -46,18 +46,20 @@ export default function Home() {
           <button
             className="mb-4 px-4 py-2 ml-4"
             onClick={() => handleSummaryTypeChange("dining")}
+            data-testid="diningButton"
           >
             Dining Halls
           </button>
           <button
             className="px-4 py-2 ml-10"
             onClick={() => handleSummaryTypeChange("dorms")}
+            data-testid="dormButton"
           >
             Dorms
           </button>
 
           <Link className="px-4 py-2 ml-auto mr-10" to="/recommend">
-            <button>Find a Dorm</button>
+            <button data-testid="findDormButton">Find a Dorm</button>
           </Link>
         </div>
         {summaryType === "dining" ? (

@@ -238,6 +238,7 @@ export default function MakePost() {
             <button
               className="px-4 py-2 my-5 bg-blue-500 text-white rounded"
               onClick={handleSubmit}
+              data-testid="submitButton"
             >
               Submit
             </button>

@@ -17,22 +17,24 @@ const DormCard = ({
 }: DormCardProps) => {
   console.log(imgId);
   return (
-    <div 
-    className="bg-white shadow-md rounded-lg p-6">
+    <div className="bg-white shadow-md rounded-lg p-6">
       <div className="flex">
         <div className="w-1/2">
-          <a 
+          <a
             className="text-3xl font-bold mb-4 text-black hover:underline"
-            href={`/dorms/${name}`}>
+            href={`/dorms/${name}`}
+            data-testid="dormName"
+          >
             {dormIDToName(name)}
           </a>
-          <h2 className="text-xl font-semibold mb-2 text-primary">
+          <h2
+            className="text-xl font-semibold mb-2 text-primary"
+            data-testid="location"
+          >
             {location}
           </h2>
-          <p className="text-gray-700 mb-2">
-            Room Types:
-          </p>
-          <ul className="list-disc list-inside mb-4">
+          <p className="text-gray-700 mb-2">Room Types:</p>
+          <ul className="list-disc list-inside mb-4" data-testid="roomTypesList">
             {roomTypes.map((roomType, index) => (
               <li key={index} className="text-gray-700">
                 {roomType}
@@ -55,6 +57,7 @@ const DormCard = ({
           <img
             src={`https://drive.google.com/thumbnail?id=${imgId}`}
             alt="Dorm Image"
+            data-testid="dormImage"
           />
         </div>
       </div>

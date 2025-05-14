@@ -10,7 +10,20 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+/**
+ * Fetches descriptions and construction years for Brown University dorms by querying the ArcGIS API and mapping the data to standardized dorm names.
+ * 
+ * The result is a map where each key is a standardized dorm name and each value is a map containing the dorm's description and year built. 
+ * Standardized dorm names are matched using a helper from AccessibilityFetcher.
+ */
+
 public class DormInfoFetcher {
+	/**
+     * Queries the Brown University ArcGIS API to fetch dorm information.
+     * 
+     * @return a map of standardized dorm names to a sub-map containing 
+     *         "description" and "built" (year of construction)
+     */
 	public static Map<String, Map<String, String>> fetchDormInfo() {
 		Map<String, Map<String, String>> dormInfoMap = new HashMap<>();
 		try {

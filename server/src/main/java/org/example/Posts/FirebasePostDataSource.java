@@ -70,6 +70,7 @@ public class FirebasePostDataSource implements PostsDataSource {
 	 * @param post The post to be added.
 	 */
 	public void addPost(AbstractPost post) {
+
 		Map<String, Object> postValues = new HashMap<>();
 		String postType = post.getType();
 		String location = post.getLocation();
@@ -107,16 +108,7 @@ public class FirebasePostDataSource implements PostsDataSource {
 			DocumentReference locationDocRef = postType.equals("dorm")
 					? dormPostsRef.document(location)
 					: diningPostsRef.document(location);
-			DocumentSnapshot document = locationDocRef.get().get();
-
-			if (document.exists()) {
-				locationDocRef.update("posts", FieldValue.arrayUnion(postValues));
-			} else {
-				// Document doesn't exist, create it with the first post
-				Map<String, Object> docData = new HashMap<>();
-				docData.put("posts", Arrays.asList(postValues));
-				locationDocRef.set(docData).get();
-			}
+			locationDocRef.update("posts", FieldValue.arrayUnion(postValues));
 
 		} catch (Exception e) {
 			throw new RuntimeException("Error adding post: " + e.getMessage(), e);
@@ -168,6 +160,7 @@ public class FirebasePostDataSource implements PostsDataSource {
 		try {
 			CollectionReference collectionRef;
 			List<AbstractPost> allPosts = getAllPosts();
+			// Determine which collection to use based on post type
 			if ("dorm".equals(type)) {
 				collectionRef = dormPostsRef;
 			} else if ("dining".equals(type)) {
@@ -178,15 +171,17 @@ public class FirebasePostDataSource implements PostsDataSource {
 
 			DocumentReference docRef = collectionRef.document(location);
 
+			// Use a transaction to ensure atomicity
 			firestore.runTransaction(transaction -> {
 				DocumentSnapshot snapshot = transaction.get(docRef).get();
-
 				List<Map<String, Object>> posts = (List<Map<String, Object>>) snapshot.get("posts");
 
+				// Check if the posts list is null or empty
 				if (posts == null || posts.isEmpty()) {
 					throw new NoSuchElementException("No posts found for location: " + location);
 				}
 
+				// Find the post to delete
 				for (Map<String, Object> post : posts) {
 					if (userID.equals(post.get("userID")) && postID.equals(post.get("postID"))) {
 						transaction.update(docRef, "posts", FieldValue.arrayRemove(post));
@@ -252,12 +247,15 @@ public class FirebasePostDataSource implements PostsDataSource {
 
 		try {
 			var documents = dormPostsRef.get().get().getDocuments();
+			// Iterate through each document in the dorms collection
 			for (var doc : documents) {
 				String dormLocation = doc.getId();
 				List<Map<String, Object>> postsList = (List<Map<String, Object>>) doc.get("posts");
 
 				if (postsList != null) {
+					// Iterate through each post in the posts list
 					for (Map<String, Object> postData : postsList) {
+						// Create a DormPost object from the post data
 						DormPost post = createDormPostFromMap(postData, dormLocation);
 						posts.add(post);
 					}
@@ -299,12 +297,15 @@ public class FirebasePostDataSource implements PostsDataSource {
 		try {
 			var documents = diningPostsRef.get().get().getDocuments();
 
+			// Iterate through each document in the dining_posts collection
 			for (var doc : documents) {
 				String diningLocation = doc.getId();
 				List<Map<String, Object>> postsList = (List<Map<String, Object>>) doc.get("posts");
 
 				if (postsList != null) {
+					// Iterate through each post in the posts list
 					for (Map<String, Object> postData : postsList) {
+						// Create a DiningPost object from the post data
 						DiningPost post = createDiningPostFromMap(postData, diningLocation);
 						posts.add(post);
 					}
@@ -354,7 +355,6 @@ public class FirebasePostDataSource implements PostsDataSource {
 		return sum / ratings.size();
 	}
 
-	
 	/**
 	 * Creates a Google Drive service using the provided service account key.
 	 *

@@ -18,12 +18,12 @@ const ReviewCard = ({ title, rating, topPosts, lastUpdated }: ReviewCardProps) =
         <p className="text-gray-700 mb-2">Top Posts:</p>
         <ul className="list-disc list-inside mb-4">
           {topPosts.map((post, index) => (
-            <li key={index} className="text-gray-700">
+            <li key={index} className="text-gray-700" aria-label={`Post: ${post}`}>
               {post}
             </li>
           ))}
         </ul>
-        <p className="text-gray-500">Last Updated: {lastUpdated}</p>
+        <p className="text-gray-500">Last Updated: {lastUpdated} </p>
       </div>
     );
 };

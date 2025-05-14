@@ -36,6 +36,7 @@ function Leaderboard() {
               posts={dorm.dorm.posts || []}
               location={dorm.dorm.proximity[0]}
               imgId={dormNametoImageId(dorm.dorm.name)}
+			  aria-label={`Link to ${dorm.dorm.name} dorm`}
             />
           ))}
         </div>

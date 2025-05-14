@@ -2,7 +2,7 @@
 
 @theme {
   --color-mint-500: oklch(0.72 0.11 178);
-  --color-primary: #810F1B;
+  --color-primary: #810f1b;
   --color-text: #ffffff;
 }
 
@@ -16,18 +16,19 @@ body {
 }
 
 button {
-  @apply 
-  bg-primary 
+  @apply bg-primary 
   text-text 
   rounded-lg 
   px-4 
-  py-2 
-  hover:bg-white 
-  hover:text-black;
+  py-2;
 }
 
-.card-container { 
-  @apply mt-5 ml-4 mr-4 grid grid-cols-3 gap-4
+button:hover {
+  background: #3f220f;
+}
+
+.card-container {
+  @apply mt-5 ml-4 mr-4 grid grid-cols-3 gap-4;
 }
 .navbar {
   @apply py-4 bg-primary pr-6;
@@ -44,5 +45,12 @@ button {
 
 .navbar-link {
   @apply text-text no-underline;
-  padding: 0 0.5rem; 
+  padding: 0 0.5rem;
+}
+
+.navbar-link:hover {
+  border: 2px solid white;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  background: #3f220f;
 }

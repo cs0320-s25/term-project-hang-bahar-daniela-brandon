@@ -50,6 +50,7 @@
 - Emmett Young
 - Chat GPT: OpenAI. (2023). ChatGPT (Mar 14 version) [Large language model]. https://chat.openai.com/chat (Utilized for conceptual understanding of sql vs non-sql based firestore, finding recommendations for stemming words and detecting typos, generating boilerplate code, debugging and some helper functions)
 - Antrophic.(2025).Claude(January 2025 version)[Large Language Model]. https://claude.ai/new.
+(Utilized for code design questions, debugging, and adopted code)
 
 
 # Resources Used:

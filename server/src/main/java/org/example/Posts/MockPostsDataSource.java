@@ -7,7 +7,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.io.File;
-
+/**
+ * MockPostsDataSource class simulating a data source for posts.
+ * This class implements the PostsDataSource interface and provides
+ * methods to add, delete, and retrieve posts.
+*/
 public class MockPostsDataSource implements PostsDataSource {
 	Map<String, Object> diningPosts = new HashMap<>();
 	Map<String, Object> dormPosts = new HashMap<>();

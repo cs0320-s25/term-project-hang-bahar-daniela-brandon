@@ -6,6 +6,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.auth.oauth2.GoogleCredentials;
 import java.io.IOException;
 
+/**
+ * FirebaseService class to initialize and manage Firebase database connection.
+ * This class is responsible for setting up the Firebase application
+ * and providing access to the Firebase database instance.
+ */
 public class FirebaseService {
   private FirebaseDatabase database;
 

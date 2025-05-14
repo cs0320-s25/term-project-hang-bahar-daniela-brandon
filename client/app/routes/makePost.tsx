@@ -1,4 +1,9 @@
-import { RedirectToSignIn, SignedIn, SignedOut, useUser } from "@clerk/clerk-react";
+import {
+  RedirectToSignIn,
+  SignedIn,
+  SignedOut,
+  useUser,
+} from "@clerk/clerk-react";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { dormIDToName, type Dorm } from "~/helpers";
@@ -8,7 +13,7 @@ import { addPost, uploadImage } from "~/queries/posts";
 interface PostData {
   type: "dining" | "dorm";
   title: string;
-  location: string
+  location: string;
   content: string;
 }
 
@@ -16,7 +21,7 @@ export default function MakePost() {
   const navigate = useNavigate();
   const { isSignedIn, user } = useUser();
   const userId = isSignedIn ? user.id : "";
-  
+
   const [dormNames, setDormNames] = useState<string[]>([]);
   const [formData, setFormData] = useState<PostData>({
     type: "dorm",
@@ -33,7 +38,16 @@ export default function MakePost() {
     });
   }, []);
 
-  const ALL_DINING_HALLS = ['V-Dub', 'Andrews', 'The Ratty', 'Jo\'s', 'Blue Room', 'Ivy Room', 'Gourmet to Go', 'SOE Cafe'];
+  const ALL_DINING_HALLS = [
+    "V-Dub",
+    "Andrews",
+    "The Ratty",
+    "Jo's",
+    "Blue Room",
+    "Ivy Room",
+    "Gourmet to Go",
+    "SOE Cafe",
+  ];
 
   const [selectedOption, setSelectedOption] = useState<
     "Dorms" | "Dining Halls"
@@ -43,7 +57,7 @@ export default function MakePost() {
 
   const handleRating = (star: number) => {
     setRating(star);
-  }; 
+  };
 
   const handleChange = (
     event: React.ChangeEvent<
@@ -57,7 +71,27 @@ export default function MakePost() {
     }));
   };
 
-  function handleSubmit(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
+  const handleDormsClick = () => {
+    setSelectedOption("Dorms");
+    setFormData((prev) => ({
+      ...prev,
+      type: "dorm",
+      location: dormNames[0] || "barbourhall",
+    }));
+  };
+
+  const handleDiningHallsClick = () => {
+    setSelectedOption("Dining Halls");
+    setFormData((prev) => ({
+      ...prev,
+      type: "dining",
+      location: ALL_DINING_HALLS[0],
+    }));
+  };
+
+  function handleSubmit(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ): void {
     if (formData.title == "") {
       alert("Please enter a title");
       return;
@@ -100,15 +134,20 @@ export default function MakePost() {
         } else {
           console.error("Error adding post:", response.error);
         }
-      })
+      });
     }
   }
   return (
     <div>
       <SignedIn>
-        <div className="flex justify-center">
+        <div className="flex justify-center" аria-label="make post divider">
           <div className="p-7 w-full">
-            <h1 className="text-5xl text-black font-bold mb-4">Make a post!</h1>
+            <h1
+              className="text-5xl text-black font-bold mb-4"
+              aria-label="make post"
+            >
+              Make a post!
+            </h1>
             <div className="space-x-4">
               <input
                 type="text"
@@ -116,6 +155,7 @@ export default function MakePost() {
                 placeholder="Title"
                 onChange={handleChange}
                 className="border border-gray-300 rounded px-4 py-2 text-black mb-4 w-md"
+                aria-label="post title"
               />
             </div>
             <div className="flex space-x-4 mb-4">
@@ -125,7 +165,8 @@ export default function MakePost() {
                     ? "bg-white text-black"
                     : "bg-primary text-white"
                 }`}
-                onClick={() => setSelectedOption("Dorms")}
+                onClick={handleDormsClick}
+                aria-label="dorms button"
               >
                 Dorms
               </button>
@@ -135,7 +176,8 @@ export default function MakePost() {
                     ? "bg-blue-500 text-white"
                     : "bg-gray-200"
                 }`}
-                onClick={() => setSelectedOption("Dining Halls")}
+                onClick={handleDiningHallsClick}
+                aria-label="dining halls button"
               >
                 Dining Halls
               </button>
@@ -148,6 +190,7 @@ export default function MakePost() {
                   className="flex-1 border border-gray-300 rounded px-4 py-2 text-black"
                   name="location"
                   onChange={handleChange}
+                  aria-label="dorm selection"
                 >
                   {dormNames.map((dorm) => (
                     <option key={dorm} value={dorm}>
@@ -167,6 +210,7 @@ export default function MakePost() {
                   className="flex-1 border border-gray-300 rounded px-4 py-2 text-black"
                   name="location"
                   onChange={handleChange}
+                  aria-label="dining hall selection"
                 >
                   {ALL_DINING_HALLS.map((dining) => (
                     <option key={dining} value={dining}>
@@ -182,6 +226,7 @@ export default function MakePost() {
                   name="meal"
                   className="flex-1 border border-gray-300 rounded px-4 py-2 text-black"
                   onChange={handleChange}
+                  aria-label="meal input"
                 />
               </div>
             )}
@@ -195,6 +240,7 @@ export default function MakePost() {
                     star <= rating ? "text-yellow-500" : "text-gray-300"
                   }`}
                   onClick={() => handleRating(star)}
+                  aria-label={`rating ${star}`}
                 >
                   ★
                 </span>
@@ -207,11 +253,13 @@ export default function MakePost() {
                 className="flex-1 border border-gray-300 rounded px-3 py-3 text-black"
                 name="content"
                 onChange={handleChange}
+                aria-label="review input"
               />
               <div className="flex-1 items-center">
                 <label
                   htmlFor="file-upload"
                   className="w-40 h-40 border border-gray-300 rounded px-4 py-2 text-black text-center"
+                  aria-label="upload image"
                 >
                   Upload Image
                 </label>
@@ -225,6 +273,7 @@ export default function MakePost() {
                     const file = e.target.files?.[0];
                     setFile(file || null);
                   }}
+                  aria-label="file input"
                 />
                 {file && (
                   <img
@@ -239,6 +288,7 @@ export default function MakePost() {
               className="px-4 py-2 my-5 bg-blue-500 text-white rounded"
               onClick={handleSubmit}
               data-testid="submitButton"
+              aria-label="submit post"
             >
               Submit
             </button>

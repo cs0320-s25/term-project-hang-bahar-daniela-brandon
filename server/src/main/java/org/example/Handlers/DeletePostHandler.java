@@ -1,18 +1,14 @@
 package org.example.Handlers;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import org.example.Posts.PostsDataSource;
-
-import org.example.Posts.AbstractPost;
-import org.example.Posts.DiningPost;
-import org.example.Posts.DormPost;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
+/**
+ * DeletePostHandler class to handle requests for deleting posts.
+ * This class implements the Route interface from the Spark framework.
+ */
 public class DeletePostHandler implements Route {
 	private PostsDataSource dataSource;
 
@@ -20,6 +16,14 @@ public class DeletePostHandler implements Route {
 		this.dataSource = dataSource;
 	}
 
+	/**
+	 * Handles the request to delete a post.
+	 *
+	 * @param req The HTTP request object.
+	 * @param res The HTTP response object.
+	 * @return A message indicating the result of the deletion operation.
+	 * @throws Exception If an error occurs while processing the request.
+	 */
 	@Override
 	public Object handle(Request req, Response res) throws Exception {
 		String postID = req.queryParams("postID");

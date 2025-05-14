@@ -8,6 +8,11 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+/**
+ * GetAverageRatingHandler class to handle requests for retrieving average
+ * ratings for dorms and dining halls.
+ * This class implements the Route interface from the Spark framework.
+ */
 public class GetAverageRatingHandler implements Route {
 	private PostsDataSource dataSource;
 
@@ -15,6 +20,14 @@ public class GetAverageRatingHandler implements Route {
 		this.dataSource = dataSource;
 	}
 
+	/**
+	 * Handles the request to retrieve average ratings for a specific location.
+	 *
+	 * @param req The HTTP request object.
+	 * @param res The HTTP response object.
+	 * @return A JSON representation of the average rating or an error message.
+	 * @throws Exception If an error occurs while processing the request.
+	 */
 	@Override
 	public Object handle(Request req, Response res) throws Exception {
 		String location = req.queryParams("location");

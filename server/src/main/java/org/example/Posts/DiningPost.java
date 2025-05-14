@@ -1,5 +1,9 @@
 package org.example.Posts;
 
+/**
+ * DiningPost class representing a dining post with specific attributes.
+ * This class extends the AbstractPost class and adds a meals attribute.
+ */
 public class DiningPost extends AbstractPost {
 	private String meals;
 

@@ -1,5 +1,12 @@
 package org.example.Posts;
 
+/**
+ * AbstractPost class representing a post with common attributes.
+ * This class serves as a base class for different types of posts.
+ * It contains attributes such as rating, content, dateTime, title, type,
+ * location, userID, postID, and imageURL.
+ * The class provides getter methods to access these attributes.
+ */
 public abstract class AbstractPost {
 	protected Integer rating;
 	protected String content;
@@ -23,10 +30,6 @@ public abstract class AbstractPost {
 		this.dateTime = dateTime;
 		this.imageURL = imageURL;
 	}
-
-	// public void setPostID(String postID) {
-	// 	this.postID = postID;
-	// }
 
 	public String getTitle() {
 		return title;

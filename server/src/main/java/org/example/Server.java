@@ -44,9 +44,7 @@ public class Server {
 				});
 
 		DormDataSource mockDS = DormDataSourceFactory.createDataSource(DormDataSourceFactory.DataSourceType.MOCK);
-
 		DormDataSource firebaseDS = DormDataSourceFactory.createDataSource(DataSourceType.FIREBASE);
-
 		PostsDataSource postsDataSource;
 		try {
 			postsDataSource = new FirebasePostDataSource();
@@ -54,8 +52,7 @@ public class Server {
 			System.err.println("Failed to initialize FirebasePostDataSource: " + e.getMessage());
 			throw new RuntimeException(e); // Or handle the exception as appropriate for your application
 		}
-		// fetches the data at http://localhost:3232/search?query=quiet Or
-		// /info?query=getAllDorms
+		
 		Spark.get("/search", new SearchHandler(firebaseDS));
 		System.out.print("calling info");
 		Spark.get("/info", new GetDormsHandler(firebaseDS));
@@ -68,25 +65,6 @@ public class Server {
 		// Spark.get("/get-dorms", new GetDormsHandler(firebaseDS));
 		// Spark.get("/get-dining-halls", new GetDiningHallsHandler(firebaseDS));
 		// Spark.get("/get-dining-halls", new GetDiningHallsHandler(firebaseDS));
-
-		// Spark.get(
-		// "/",
-		// (request, response) -> {
-		// return "Welcome to the server!";
-		// });
-
-		// Spark.get(
-		// "/hello",
-		// (request, response) -> {
-		// return "Hello, World!";
-		// });
-
-		// Spark.notFound(
-		// (request, response) -> {
-		// response.status(404); // Not Found
-		// System.err.println("ERROR");
-		// return "404 Not Found - The requested endpoint does not exist.";
-		// });
 
 		Spark.init();
 		Spark.awaitInitialization();
@@ -103,14 +81,6 @@ public class Server {
 					"/Users/danielaponce/Documents/GitHub/CSCI0320/term-project-hang-bahar-daniela-brandon/dorm.csv");
 			Map<String, Integer> accessibilityMap = AccessibilityFetcher.fetchAccessibility();
 
-			// System.out.println("printing dorm accessibility");
-			// for (Map.Entry<String, Integer> entry : accessibilityMap.entrySet()) {
-			// System.out.println(entry.getKey() + " => " + entry.getValue());
-			// }
-			//
-			// for (Map.Entry<String, Set<String>> entry : dorm_room_types.entrySet()) {
-			// System.out.println(entry.getKey() + " => " + entry.getValue());
-			// }
 
 		} catch (IOException e) {
 			e.printStackTrace();

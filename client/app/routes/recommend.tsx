@@ -22,13 +22,13 @@ export default function FindRoom() {
     });
   }
 
-  function handleCheckbox (e: React.ChangeEvent<HTMLInputElement>) {
+  function handleCheckbox(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, checked } = e.target;
-    setFormData({ 
+    setFormData({
       ...formData,
       [name]: checked,
     });
-  };
+  }
 
   function handleSubmit() {
     matchDorm(formData).then((response) => {
@@ -51,10 +51,18 @@ export default function FindRoom() {
             className="border border-gray-300 rounded px-4 py-2 w-full text-black"
             data-testid="yearSelect"
           >
-            <option value="2024">2024</option>
-            <option value="2025">2025</option>
-            <option value="2026">2026</option>
-            <option value="2027">2027</option>
+            <option value="2024" aria-label="2024">
+              2024
+            </option>
+            <option value="2025" aria-label="2025">
+              2025
+            </option>
+            <option value="2026" aria-label="2026">
+              2026
+            </option>
+            <option value="2027" aria-label="2027">
+              2027
+            </option>
           </select>
           <label className="block font-medium mb-2 pt-3 text-black">
             Room Type
@@ -65,11 +73,10 @@ export default function FindRoom() {
             onChange={handleSelect}
             className="border border-gray-300 rounded px-4 py-2 w-full text-black"
             data-testid="roomTypeSelect"
+            aria-label="room type select"
           >
             {ROOM_TYPES.map((roomType) => (
-              <option value={roomType}>
-                {roomType}
-              </option>
+              <option value={roomType}>{roomType}</option>
             ))}
           </select>
           <label className="block font-medium mb-2 pt-3 text-black">
@@ -81,11 +88,10 @@ export default function FindRoom() {
             onChange={handleSelect}
             className="border border-gray-300 rounded px-4 py-2 w-full text-black"
             data-testid="locationSelect"
+            aria-label="location select"
           >
             {LOCATIONS.map((location) => (
-              <option value={location}>
-                {location}
-              </option>
+              <option value={location}>{location}</option>
             ))}
           </select>
           <label className="block font-medium mb-2 pt-3 text-black">
@@ -97,12 +103,11 @@ export default function FindRoom() {
             onChange={handleSelect}
             className="border border-gray-300 rounded px-4 py-2 w-full text-black"
             data-testid="communitySelect"
+            aria-label="community select"
           >
             <option value="None">None</option>
             {COMMUNITY_TYPES.map((community) => (
-              <option value={community}>
-                {community}
-              </option>
+              <option value={community}>{community}</option>
             ))}
           </select>
           <label className="block font-medium mb-2 pt-3 text-black">
@@ -117,8 +122,12 @@ export default function FindRoom() {
               className="border border-gray-300 rounded px-4 py-2 text-black"
               placeholder="Describe any accommodations you need..."
               data-testid="accessibilityCheckbox"
+              aria-label="accessibility checkbox"
             />
-            <label className="font-medium mb-2 pt-3 pl-3 text-black">
+            <label
+              className="font-medium mb-2 pt-3 pl-3 text-black"
+              aria-label="mobility needs"
+            >
               Do you have mobility needs?
             </label>
           </div>
@@ -126,10 +135,12 @@ export default function FindRoom() {
             className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
             onClick={handleSubmit}
             data-testid="submitButton"
+            aria-label="submit button"
           >
             Submit
           </button>
         </div>
       </div>
     </div>
-  );}
+  );
+}

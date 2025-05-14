@@ -13,6 +13,11 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+/**
+ * AddPostHandler class to handle requests for adding posts.
+ * This class implements the Route interface from the Spark framework.
+ */
+
 public class AddPostHandler implements spark.Route {
 
 	private PostsDataSource dataSource;

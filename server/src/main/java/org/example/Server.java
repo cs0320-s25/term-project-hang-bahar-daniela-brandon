@@ -54,7 +54,6 @@ public class Server {
 		}
 		
 		Spark.get("/search", new SearchHandler(firebaseDS));
-		System.out.print("calling info");
 		Spark.get("/info", new GetDormsHandler(firebaseDS));
 		Spark.post("/add-post", new AddPostHandler(postsDataSource));
 		Spark.get("/get-posts", new GetAllPostsHandler(postsDataSource));

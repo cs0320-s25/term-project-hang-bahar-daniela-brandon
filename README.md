@@ -44,6 +44,15 @@
 - Testing:
     - To run the tests, navigate to client/mock, "npm start" the program in one terminal, and "npx playwright test" in a second terminal
     - To run the backend tests, navigate to server/tests, and click run button in IntelliJ or navigate to postman and click send request
+- API Calls:
+	- /info: gets all dorm data
+	- /search: takes in a query paramter
+	- /add-posts: post request. accepts requests in for of json body with different fields(reference DormPost.java and DiningPost.java to see what fields are needed)
+	- get-posts: gets all posts
+	- /match: post rquest that accepts data in form of json body. 
+	- /upload-image: post request that accepts image file using formData. formData must have "file" property. 
+	- /average-rating: calculates average rating for a hall. must input a location(dorm or dining hall name)
+	- /delete-post: deletes a post given userID,postID, type, and location
 
 # Collaboration
 - eygeer (Eliot Geer)
@@ -52,7 +61,7 @@
 - Alexa Shield (anshield)
 - Chat GPT: OpenAI. (2023). ChatGPT (Mar 14 version) [Large language model]. https://chat.openai.com/chat (Utilized for conceptual understanding of sql vs non-sql based firestore, finding recommendations for stemming words and detecting typos, generating boilerplate code, debugging and some helper functions)
 - Antrophic.(2025).Claude(January 2025 version)[Large Language Model]. https://claude.ai/new.
-(Utilized for code design questions, debugging, and adopted code)
+(Utilized for code design questions, debugging, and adapted code)
 
 
 # Resources Used:

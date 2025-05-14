@@ -2,6 +2,7 @@ package org.example.Handlers;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import org.example.Posts.PostsDataSource;
 
@@ -12,10 +13,6 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-/**
- * AddPostHandler class to handle requests for adding posts.
- * This class implements the Route interface from the Spark framework.
- */
 public class AddPostHandler implements spark.Route {
 
 	private PostsDataSource dataSource;
@@ -25,14 +22,6 @@ public class AddPostHandler implements spark.Route {
 		this.dataSource = dataSource;
 	}
 
-	/**
-	 * Handles the request to add a new post.
-	 *
-	 * @param req The HTTP request object.
-	 * @param res The HTTP response object.
-	 * @return A JSON representation of the added post or an error message.
-	 * @throws Exception If an error occurs while processing the request.
-	 */
 	@Override
 	public Object handle(Request req, Response res) throws Exception {
 
@@ -51,7 +40,7 @@ public class AddPostHandler implements spark.Route {
 				res.status(400);
 				return "Missing location";
 			}
-
+		
 			AbstractPost post;
 			String type = body.get("type").getAsString();
 

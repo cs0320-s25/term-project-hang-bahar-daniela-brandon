@@ -61,9 +61,6 @@ public class Server {
 		Spark.post("/upload-image", new UploadPostImageHandler(postsDataSource));
 		Spark.get("/average-rating", new GetAverageRatingHandler(postsDataSource));
 		Spark.get("/delete-post", new DeletePostHandler(postsDataSource));
-		// Spark.get("/get-dorms", new GetDormsHandler(firebaseDS));
-		// Spark.get("/get-dining-halls", new GetDiningHallsHandler(firebaseDS));
-		// Spark.get("/get-dining-halls", new GetDiningHallsHandler(firebaseDS));
 
 		Spark.init();
 		Spark.awaitInitialization();
@@ -72,10 +69,6 @@ public class Server {
 
 	public static void printDormRoomTypes() {
 		try {
-
-			// Map<String, Set<String>> dorm_room_types = new
-			// DormRoomTypesParser().parseDormRoomTypes(
-			// "/Users/hangnguyen/Desktop/Academics/CS320/term-project-hang-bahar-daniela-brandon/dorm.csv");
 			Map<String, Set<String>> dorm_room_types = new DormRoomTypesParser().parseDormRoomTypes(
 					"/Users/danielaponce/Documents/GitHub/CSCI0320/term-project-hang-bahar-daniela-brandon/dorm.csv");
 			Map<String, Integer> accessibilityMap = AccessibilityFetcher.fetchAccessibility();

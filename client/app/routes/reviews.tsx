@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { dormIDToName } from "~/helpers";
 import { getAllPosts } from "~/queries/posts";
 
 interface Post {
@@ -95,7 +96,10 @@ export default function Reviews() {
               {post.title}
             </h1>
             <h3 className="text-lg  text-primary font-bold mb-2">
-              {post.location}
+              {
+              //TODO: Make general function to convert location to name
+              dormIDToName(post.location)
+              }
             </h3>
             <div className="flex items-center mb-2">
               <div className="text-yellow-500 text-xl">

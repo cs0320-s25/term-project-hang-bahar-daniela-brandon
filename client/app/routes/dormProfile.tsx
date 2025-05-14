@@ -32,7 +32,7 @@ function DormProfile(){
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <div className="mb-2">
-        <h1 className="text-6xl font-bold text-black">
+        <h1 className="text-6xl font-bold text-black" data-testid="dormName">
           {dormIDToName(dormData.name)}
         </h1>
         <h2 className="text-3xl font-semibold py-2 text-primary">

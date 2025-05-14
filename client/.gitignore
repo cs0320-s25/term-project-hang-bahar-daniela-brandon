@@ -20,3 +20,8 @@ playwright/.cache/
 
 # mac
 .DS_Store
+
+# Playwright
+/playwright-report/
+/blob-report/
+/playwright/.cache/

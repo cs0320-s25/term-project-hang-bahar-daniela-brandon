@@ -49,6 +49,7 @@ export default function FindRoom() {
             value={formData.classYear}
             onChange={handleSelect}
             className="border border-gray-300 rounded px-4 py-2 w-full text-black"
+            data-testid="yearSelect"
           >
             <option value="2024">2024</option>
             <option value="2025">2025</option>
@@ -63,9 +64,10 @@ export default function FindRoom() {
             value={formData.roomType}
             onChange={handleSelect}
             className="border border-gray-300 rounded px-4 py-2 w-full text-black"
+            data-testid="roomTypeSelect"
           >
             {ROOM_TYPES.map((roomType) => (
-              <option key={roomType} value={roomType}>
+              <option value={roomType}>
                 {roomType}
               </option>
             ))}
@@ -78,9 +80,10 @@ export default function FindRoom() {
             value={formData.proximity}
             onChange={handleSelect}
             className="border border-gray-300 rounded px-4 py-2 w-full text-black"
+            data-testid="locationSelect"
           >
             {LOCATIONS.map((location) => (
-              <option key={location} value={location}>
+              <option value={location}>
                 {location}
               </option>
             ))}
@@ -93,10 +96,11 @@ export default function FindRoom() {
             value={formData.communities}
             onChange={handleSelect}
             className="border border-gray-300 rounded px-4 py-2 w-full text-black"
+            data-testid="communitySelect"
           >
             <option value="None">None</option>
             {COMMUNITY_TYPES.map((community) => (
-              <option key={community} value={community}>
+              <option value={community}>
                 {community}
               </option>
             ))}
@@ -112,6 +116,7 @@ export default function FindRoom() {
               onChange={handleCheckbox}
               className="border border-gray-300 rounded px-4 py-2 text-black"
               placeholder="Describe any accommodations you need..."
+              data-testid="accessibilityCheckbox"
             />
             <label className="font-medium mb-2 pt-3 pl-3 text-black">
               Do you have mobility needs?
@@ -120,6 +125,7 @@ export default function FindRoom() {
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
             onClick={handleSubmit}
+            data-testid="submitButton"
           >
             Submit
           </button>

@@ -29,6 +29,7 @@
 
 # Tests
 - We test for:
+- Integration tests and front-end unit tests to ensure data is up to date
 - JUnit test for testing the helper methods in the backend
 - Postman, and local browser fetch, tests to ensure the expected behavior of GET and POST endpoints
 - Playwright, and manual browser tests, to ensure the expected front-end behavior

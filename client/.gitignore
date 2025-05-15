@@ -21,4 +21,7 @@ playwright/.cache/
 # mac
 .DS_Store
 
-server/src/main/resources/
+# Playwright
+/playwright-report/
+/blob-report/
+/playwright/.cache/

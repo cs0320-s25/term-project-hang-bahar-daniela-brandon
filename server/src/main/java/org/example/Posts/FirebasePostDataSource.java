@@ -108,6 +108,15 @@ public class FirebasePostDataSource implements PostsDataSource {
 			DocumentReference locationDocRef = postType.equals("dorm")
 					? dormPostsRef.document(location)
 					: diningPostsRef.document(location);
+			DocumentSnapshot document = locationDocRef.get().get();
+			if (document.exists()) {
+				locationDocRef.update("posts", FieldValue.arrayUnion(postValues));
+			} else {
+				// Document doesn't exist, create it with the first post
+				Map<String, Object> docData = new HashMap<>();
+				docData.put("posts", Arrays.asList(postValues));
+				locationDocRef.set(docData).get();
+			}
 			locationDocRef.update("posts", FieldValue.arrayUnion(postValues));
 
 		} catch (Exception e) {
